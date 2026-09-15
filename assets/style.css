@@ -70,59 +70,8 @@ header .tagline { margin: 0 auto; max-width: 34em; color: var(--muted); }
 .steps li { margin: 4px 0; }
 .note { color: var(--muted); font-size: 0.95rem; margin: 0; }
 
-.deadline { background: var(--green-100); color: var(--green-900); border-radius: 8px; padding: 8px 12px; margin: 0 0 16px; font-weight: 600; }
-
-label { display: block; font-weight: 600; margin: 14px 0 4px; }
-.hint { display: block; font-weight: 400; color: var(--muted); font-size: 0.9rem; }
-
-input[type="email"], input[type="tel"], input[type="number"], textarea {
-  width: 100%;
-  font: inherit;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-}
-input:focus, textarea:focus, button:focus-visible { outline: 3px solid rgba(74, 154, 99, 0.45); outline-offset: 1px; }
-textarea { min-height: 88px; resize: vertical; }
-
-fieldset { border: 0; padding: 0; margin: 0; }
-fieldset legend { font-weight: 600; margin: 14px 0 4px; padding: 0; }
-.radios { display: flex; gap: 20px; }
-.radios label, .check { font-weight: 400; margin: 0; display: flex; gap: 8px; align-items: flex-start; }
-.radios input, .check input { margin: 4px 0 0; flex: none; }
-.check { margin-top: 16px; }
-
-#donation-details { padding: 12px 14px 4px; margin-top: 12px; background: var(--green-100); border-radius: 10px; }
-#donation-details label:first-child { margin-top: 0; }
-
-button.primary {
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  font: inherit;
-  font-weight: 700;
-  color: #fff;
-  background: var(--green-700);
-  border: 0;
-  border-radius: 10px;
-  cursor: pointer;
-}
-button.primary:hover { background: var(--green-900); }
-button.primary:disabled { opacity: 0.6; cursor: default; }
-
-.status { margin: 12px 0 0; min-height: 1.5em; font-weight: 600; }
-.status[data-kind="ok"] { color: var(--green-700); }
-.status[data-kind="error"], .status[data-kind="duplicate"], .status[data-kind="invalid"] { color: var(--danger); }
-.status[data-kind="closed"], .status[data-kind="pending"] { color: var(--muted); }
-
-details { margin-top: 20px; }
-details summary { cursor: pointer; font-weight: 600; color: var(--green-900); }
-details ol { padding-left: 1.3em; font-size: 0.95rem; color: var(--muted); }
-details li { margin: 6px 0; }
-
 footer { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 28px; }
+footer .privacy { font-size: 0.8rem; max-width: 36em; margin: 8px auto 0; }
 
 .visually-hidden {
   position: absolute !important;

@@ -38,18 +38,19 @@ test('no empty strings anywhere', () => {
 });
 
 test('Swiss German never uses ß', () => {
-  const text = JSON.stringify(I18N.de);
-  assert.ok(!text.includes('ß'), 'found ß in de strings');
+  assert.ok(!JSON.stringify(I18N.de).includes('ß'), 'found ß in de strings');
 });
 
-test('every status code the backend can return has a message', () => {
-  for (const code of ['ok', 'duplicate', 'closed', 'invalid', 'error', 'pending']) {
-    for (const lang of LANGS) assert.ok(I18N[lang][`status.${code}`], `${lang} status.${code}`);
+test('no prize-draw or form strings remain', () => {
+  for (const key of Object.keys(I18N.de)) {
+    assert.ok(!/^(draw|form|status|terms)\./.test(key), `leftover key ${key}`);
+  }
+  const all = JSON.stringify(I18N).toLowerCase();
+  for (const word of ['gewinnspiel', 'concours', 'prize draw', '50 franken', '50 francs']) {
+    assert.ok(!all.includes(word), `leftover copy: ${word}`);
   }
 });
 
-test('terms mention the deadline date in every language', () => {
-  assert.ok(I18N.de['terms.items'].some((s) => s.includes('19. September 2026')));
-  assert.ok(I18N.fr['terms.items'].some((s) => s.includes('19 septembre 2026')));
-  assert.ok(I18N.en['terms.items'].some((s) => s.includes('19 September 2026')));
+test('privacy line names GitHub Pages hosting in every language', () => {
+  for (const lang of LANGS) assert.match(I18N[lang]['footer.privacy'], /GitHub Pages/);
 });

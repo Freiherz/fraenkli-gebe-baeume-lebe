@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Fränkli gebe, Bäume lebe – 1 CHF = 1 Baum</title>
-  <meta name="description" content="Spende 1 Franken, wir pflanzen einen Baum. Gratis am Gewinnspiel teilnehmen und 50 CHF gewinnen.">
+  <meta name="description" content="Spende 1 Franken, wir pflanzen einen Baum. Ein Studierendenprojekt.">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -28,66 +28,18 @@
         <p class="note" data-i18n="donate.note"></p>
       </section>
 
-      <section class="card" id="draw">
-        <h2 data-i18n="draw.h2"></h2>
-        <p class="lead" data-i18n="draw.lead"></p>
-        <p class="deadline"><span data-i18n="draw.deadline"></span> <span id="deadline"></span></p>
-
-        <form id="entry">
-          <label for="email" data-i18n="form.email"></label>
-          <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120">
-
-          <label for="phone">
-            <span data-i18n="form.phone"></span>
-            <span class="hint" data-i18n="form.phone.hint"></span>
-          </label>
-          <input id="phone" name="phone" type="tel" required autocomplete="tel" inputmode="tel" pattern="[+0-9 ()/-]{7,20}" maxlength="20">
-
-          <fieldset>
-            <legend data-i18n="form.donated"></legend>
-            <div class="radios">
-              <label><input type="radio" name="donated" value="yes" required> <span data-i18n="form.yes"></span></label>
-              <label><input type="radio" name="donated" value="no" required> <span data-i18n="form.no"></span></label>
-            </div>
-          </fieldset>
-
-          <fieldset id="donation-details" hidden>
-            <label for="why" data-i18n="form.why"></label>
-            <textarea id="why" name="why" maxlength="1000" data-i18n-placeholder="form.why.placeholder"></textarea>
-
-            <label for="amount" data-i18n="form.amount"></label>
-            <input id="amount" name="amount" type="number" min="1" step="0.05" inputmode="decimal">
-          </fieldset>
-
-          <label class="visually-hidden" aria-hidden="true">Website
-            <input name="website" type="text" tabindex="-1" autocomplete="off">
-          </label>
-
-          <label class="check">
-            <input name="consent" type="checkbox" required>
-            <span data-i18n="form.consent"></span>
-          </label>
-
-          <button type="submit" class="primary" data-i18n="form.submit"></button>
-        </form>
-        <p class="status" role="status" aria-live="polite"></p>
-
-        <details id="terms">
-          <summary data-i18n="terms.summary"></summary>
-          <ol data-i18n-list="terms.items"></ol>
-        </details>
+      <section class="card" id="about">
+        <h2 data-i18n="about.h2"></h2>
+        <p data-i18n="about.text"></p>
       </section>
     </main>
 
     <footer>
       <p data-i18n="footer.note"></p>
+      <p class="privacy" data-i18n="footer.privacy"></p>
     </footer>
   </div>
 
-  <script>
-    // Fill in after deploying apps-script/Code.gs as a web app (see README).
-    window.APP_CONFIG = { endpoint: 'https://script.google.com/macros/s/AKfycbwiOEssfBTfL0tq0f2yaVDMv1ZmKaJNgVa9xVpf96MD5vdryusRM4F7c7jGNSoUFnoQ/exec' };
-  </script>
   <script src="assets/i18n.js"></script>
   <script src="assets/logic.js"></script>
   <script src="assets/app.js"></script>
