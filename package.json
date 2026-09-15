@@ -1,0 +1,13 @@
+{
+  "name": "fraenkli-gebe-baeume-lebe",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-page donation campaign (1 CHF = 1 tree) with a free prize draw",
+  "scripts": {
+    "test": "node --test",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}
