@@ -5,7 +5,7 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 const { read } = require('./helpers');
 
 const html = read('index.html');
-const scripts = ['assets/team.js', 'assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/ui.js'].map(read);
+const scripts = ['assets/config.js', 'assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/ui.js'].map(read);
 
 // Boot the page in jsdom the way a browser would: HTML first, then the scripts
 // in order. `navLang` and `stored` stand in for the visitor's browser locale
@@ -15,7 +15,7 @@ const scripts = ['assets/team.js', 'assets/i18n.js', 'assets/logic.js', 'assets/
 const windows = [];
 after(() => windows.forEach((w) => w.close()));
 
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team } = {}) {
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, donateUrl } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
@@ -26,7 +26,10 @@ function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team
   if (ends) window.document.querySelector('#countdown').dataset.ends = ends;
   for (const code of scripts) {
     window.eval(code);
-    if (team && code === scripts[0]) window.TEAM = team; // override the real team right after team.js
+    if (code === scripts[0]) { // override config.js values right after it ran
+      if (team) window.TEAM = team;
+      if (donateUrl !== undefined) window.DONATE_URL = donateUrl;
+    }
   }
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   return window;
@@ -256,4 +259,30 @@ test('the real team is wired in', () => {
   const names = [...doc.querySelectorAll('#about .team-member')].map((m) => m.textContent);
   assert.deepEqual(names, ['Kelly Ejiofor', 'Eric Scherrer', 'Michael Freiherz']);
   for (const m of doc.querySelectorAll('#about a.team-member')) assert.match(m.href, /^https:\/\/(www\.)?linkedin\.com\//);
+});
+
+test('with a donate URL the QR becomes a link and a mobile "open TWINT" button appears', () => {
+  const window = boot({ donateUrl: 'https://pay.twint.ch/x/abc' });
+  const doc = window.document;
+  const link = doc.querySelector('a#qr-link');
+  assert.ok(link, 'anchor around the QR');
+  assert.equal(link.getAttribute('href'), 'https://pay.twint.ch/x/abc');
+  assert.equal(link.querySelector('#qr').id, 'qr');
+  const open = doc.querySelector('a.qr-open');
+  assert.equal(open.getAttribute('href'), 'https://pay.twint.ch/x/abc');
+  assert.equal(open.textContent, window.I18N.de['donate.qr.open']);
+  assert.equal(open.hidden, false);
+  doc.querySelector('.lang-switch [data-lang=en]').click();
+  assert.equal(open.textContent, window.I18N.en['donate.qr.open']);
+});
+
+test('without a donate URL the QR is a plain image and the button is hidden', () => {
+  const doc = boot({ donateUrl: '' }).document;
+  assert.equal(doc.querySelector('a#qr-link'), null);
+  assert.equal(doc.querySelector('#qr').parentElement.tagName, 'FIGURE');
+  assert.equal(doc.querySelector('.qr-open').hidden, true);
+});
+
+test('the "open TWINT" button is only shown on touch devices', () => {
+  assert.match(read('assets/style.css'), /@media[^{]*\(hover:\s*none\)[^{]*\{[\s\S]*?\.qr-open/);
 });

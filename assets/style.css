@@ -458,6 +458,12 @@ button { font: inherit; color: inherit; }
   background: #fff;
 }
 .qr-card figcaption { display: grid; gap: 2px; text-align: center; }
+#qr-link { display: block; border-radius: 12px; }
+/* phones can't scan their own screen: offer the TWINT deep link instead */
+.qr-open { display: none; width: 100%; }
+@media (hover: none) and (pointer: coarse) {
+  .qr-open:not([hidden]) { display: inline-flex; }
+}
 .qr-label { font-family: var(--display); font-weight: 700; font-size: 17px; }
 .qr-amount { font-size: 14px; color: #4f6357; }
 

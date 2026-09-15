@@ -110,7 +110,25 @@
     renderTeam();
   }
 
+  // Wrap the QR in a link and enable the "open TWINT" button when a donate
+  // URL is configured; otherwise the QR stays a plain image.
+  function wireDonateLink() {
+    var url = window.DONATE_URL || '';
+    var open = document.querySelector('.qr-open');
+    var qr = document.getElementById('qr');
+    if (!url) { if (open) open.hidden = true; return; }
+    if (qr && !document.getElementById('qr-link')) {
+      var link = document.createElement('a');
+      link.id = 'qr-link';
+      link.href = url;
+      qr.parentNode.insertBefore(link, qr);
+      link.appendChild(qr);
+    }
+    if (open) { open.href = url; open.hidden = false; }
+  }
+
   function init() {
+    wireDonateLink();
     applyLang(Logic.pickLang({
       query: new URLSearchParams(location.search).get('lang'),
       stored: readStored(),

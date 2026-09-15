@@ -54,7 +54,7 @@ test('no prize-draw or form strings remain', () => {
 
 test('hero and QR card strings exist in every language', () => {
   for (const lang of LANGS) {
-    for (const key of ['hero.eyebrow.a', 'hero.cta', 'donate.qr.label', 'donate.qr.hint', 'countdown.label', 'countdown.until', 'countdown.ended', 'countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds', 'about.team', 'about.and']) {
+    for (const key of ['hero.eyebrow.a', 'hero.cta', 'donate.qr.label', 'donate.qr.hint', 'countdown.label', 'countdown.until', 'countdown.ended', 'countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds', 'about.team', 'about.and', 'donate.qr.open']) {
       assert.ok(I18N[lang][key], `${lang}.${key}`);
     }
   }
