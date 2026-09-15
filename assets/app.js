@@ -99,6 +99,7 @@
     document.title = t('meta.title');
     $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-alt]').forEach(function (el) { el.alt = t(el.dataset.i18nAlt); });
+    $$('[data-i18n-aria-label]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)); });
     $$('[data-i18n-list]').forEach(function (el) { renderList(el, t(el.dataset.i18nList)); });
     $$('.lang-switch button').forEach(function (btn) {
       btn.setAttribute('aria-pressed', String(btn.dataset.lang === next));

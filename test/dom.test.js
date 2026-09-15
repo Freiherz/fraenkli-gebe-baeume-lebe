@@ -61,6 +61,17 @@ test('clicking a language button retranslates the page and persists the choice',
   assert.equal(window.localStorage.getItem('lang'), 'en');
 });
 
+test('the slogan itself is translated in h1, brand and document title', () => {
+  const window = boot({ url: 'http://localhost/?lang=fr' });
+  const doc = window.document;
+  assert.equal(doc.querySelector('h1').textContent, 'Un p’tit franc donné, un arbre planté');
+  assert.equal(doc.querySelector('.brand-name').textContent, 'Un p’tit franc donné, un arbre planté');
+  assert.match(doc.title, /^Un p’tit franc donné, un arbre planté/);
+  doc.querySelector('.lang-switch [data-lang=en]').click();
+  assert.equal(doc.querySelector('h1').textContent, 'Give a franc, grow a tree');
+  assert.equal(doc.querySelector('.brand').getAttribute('aria-label'), 'Give a franc, grow a tree');
+});
+
 test('stored language from a previous visit beats the browser locale', () => {
   const window = boot({ stored: 'fr', navLang: 'en-US' });
   assert.equal(window.document.documentElement.lang, 'fr');
