@@ -30,8 +30,8 @@ window.PARTNERS = [
     } },
   { id: 'nakt', name: 'NaKt', logo: 'assets/partners/NaKt.png', url: '',
     description: { de: '[Kurzbeschreibung NaKt]', fr: '[Description NaKt]', en: '[Short description NaKt]' } },
-  { id: 'partner-3', name: 'Partner 3', logo: 'assets/partners/partner-3.svg', url: '',
-    description: { de: '[Kurzbeschreibung Partner 3]', fr: '[Description partenaire 3]', en: '[Short description partner 3]' } },
+  { id: 'alias', name: 'Alias', logo: 'assets/partners/alias.webp', url: '',
+    description: { de: '[Kurzbeschreibung Alias]', fr: '[Description Alias]', en: '[Short description Alias]' } },
   { id: 'zhaw-entrepreneurship', name: 'ZHAW Entrepreneurship', logo: 'assets/partners/zhaw-entrepreneurship.svg', url: '',
     description: { de: '[Kurzbeschreibung ZHAW Entrepreneurship]', fr: '[Description ZHAW Entrepreneurship]', en: '[Short description ZHAW Entrepreneurship]' } },
 ];
