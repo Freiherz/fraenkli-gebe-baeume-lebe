@@ -32,6 +32,7 @@ test('no empty strings anywhere', () => {
   for (const lang of LANGS) {
     for (const [key, value] of Object.entries(I18N[lang])) {
       const values = Array.isArray(value) ? value : [value];
+      if (key === 'hero.eyebrow.b') continue; // may be empty: then the eyebrow has no mobile break
       for (const v of values) assert.ok(v.trim().length > 0, `${lang}.${key} is empty`);
     }
   }
@@ -53,7 +54,7 @@ test('no prize-draw or form strings remain', () => {
 
 test('hero and QR card strings exist in every language', () => {
   for (const lang of LANGS) {
-    for (const key of ['hero.eyebrow.a', 'hero.eyebrow.b', 'hero.cta', 'donate.qr.label', 'donate.qr.hint', 'countdown.label', 'countdown.until', 'countdown.ended', 'countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds', 'about.team', 'about.and']) {
+    for (const key of ['hero.eyebrow.a', 'hero.cta', 'donate.qr.label', 'donate.qr.hint', 'countdown.label', 'countdown.until', 'countdown.ended', 'countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds', 'about.team', 'about.and']) {
       assert.ok(I18N[lang][key], `${lang}.${key}`);
     }
   }

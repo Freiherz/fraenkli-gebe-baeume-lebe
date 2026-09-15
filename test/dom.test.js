@@ -130,16 +130,24 @@ test('hero: single donate CTA scrolls to the donate section, tree animation is i
 });
 
 test('hero eyebrow is split into two spans around a separator that breaks on mobile', () => {
-  const window = boot({ url: 'http://localhost/?lang=fr' });
+  const window = boot({ url: 'http://localhost/?lang=de' });
   const eyebrow = window.document.querySelector('.hero .eyebrow');
   const [a, b] = eyebrow.querySelectorAll('[data-i18n]');
-  assert.equal(a.textContent, window.I18N.fr['hero.eyebrow.a']);
-  assert.equal(b.textContent, window.I18N.fr['hero.eyebrow.b']);
   const sep = eyebrow.querySelector('.eyebrow-sep');
+  assert.equal(a.textContent, window.I18N.de['hero.eyebrow.a']);
+  assert.equal(b.textContent, window.I18N.de['hero.eyebrow.b']);
+  assert.equal(sep.hidden, false);
   assert.ok(sep, 'separator element between the halves');
   assert.equal(sep.getAttribute('aria-hidden'), 'true');
   assert.equal(sep.nextElementSibling, b);
   assert.match(read('assets/style.css'), /\.eyebrow-sep[\s\S]*display:\s*block/, 'separator becomes a line break in CSS');
+});
+
+test('a language with an empty eyebrow.b renders one line and hides the separator', () => {
+  const window = boot({ url: 'http://localhost/?lang=en' });
+  const eyebrow = window.document.querySelector('.hero .eyebrow');
+  assert.equal(eyebrow.querySelector('.eyebrow-sep').hidden, true);
+  assert.equal(eyebrow.textContent.trim(), window.I18N.en['hero.eyebrow.a']);
 });
 
 test('about section replaces the prize draw and is translated', () => {
