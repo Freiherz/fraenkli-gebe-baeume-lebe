@@ -9,7 +9,7 @@ window.I18N = {
     'hero.eyebrow.a': 'Ein Pop-up Projekt von Studierenden',
     'hero.eyebrow.b': 'an der ZHAW',
     'hero.cta': 'Jetzt 1 Franken spenden',
-    'countdown.label': 'Die Aktion nur läuft noch',
+    'countdown.label': 'Die Aktion läuft nur noch',
     'countdown.until': 'Endet am',
     'countdown.ended': 'Die Aktion ist beendet – danke an alle, die mitgepflanzt haben!',
     'countdown.days': 'Tage',
