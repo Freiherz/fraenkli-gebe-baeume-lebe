@@ -67,6 +67,31 @@
     el.appendChild(until);
   }
 
+  // "Team: A, B und C" — names with a URL become LinkedIn links.
+  function renderTeam() {
+    var el = document.querySelector('#about .team');
+    var team = window.TEAM || [];
+    if (!el || !team.length) return;
+    el.innerHTML = '';
+    var label = document.createElement('span');
+    label.className = 'team-label';
+    label.textContent = t('about.team');
+    el.appendChild(label);
+    el.appendChild(document.createTextNode(' '));
+    team.forEach(function (member, i) {
+      if (i > 0) el.appendChild(document.createTextNode(i === team.length - 1 ? ' ' + t('about.and') + ' ' : ', '));
+      var node = document.createElement(member.url ? 'a' : 'span');
+      node.className = 'team-member';
+      node.textContent = member.name;
+      if (member.url) {
+        node.href = member.url;
+        node.target = '_blank';
+        node.rel = 'noopener';
+      }
+      el.appendChild(node);
+    });
+  }
+
   function applyLang(next) {
     lang = next;
     document.documentElement.lang = next;
@@ -79,6 +104,7 @@
       btn.setAttribute('aria-pressed', String(btn.dataset.lang === next));
     });
     renderCountdown();
+    renderTeam();
   }
 
   function init() {

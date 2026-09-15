@@ -475,6 +475,9 @@ button { font: inherit; color: inherit; }
 }
 .about h2 { font-size: clamp(30px, 4.6vw, 48px); }
 .about .lead { font-size: clamp(17px, 1.1vw + 12px, 19px); }
+.about .team { font-size: 16px; color: var(--ink-2); }
+.about .team-label { font-weight: 600; }
+.about a.team-member { font-weight: 600; text-decoration-thickness: 1.5px; }
 
 /* ---------- footer ---------- */
 .site-foot { padding-block: 24px 40px; font-size: 14px; color: var(--muted); display: grid; gap: 8px; }

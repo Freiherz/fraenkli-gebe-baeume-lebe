@@ -5,7 +5,7 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 const { read } = require('./helpers');
 
 const html = read('index.html');
-const scripts = ['assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/ui.js'].map(read);
+const scripts = ['assets/team.js', 'assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/ui.js'].map(read);
 
 // Boot the page in jsdom the way a browser would: HTML first, then the scripts
 // in order. `navLang` and `stored` stand in for the visitor's browser locale
@@ -15,7 +15,7 @@ const scripts = ['assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/u
 const windows = [];
 after(() => windows.forEach((w) => w.close()));
 
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends } = {}) {
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
@@ -24,7 +24,10 @@ function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends } = {
   Object.defineProperty(window.navigator, 'language', { value: navLang, configurable: true });
   if (stored) window.localStorage.setItem('lang', stored);
   if (ends) window.document.querySelector('#countdown').dataset.ends = ends;
-  for (const code of scripts) window.eval(code);
+  for (const code of scripts) {
+    window.eval(code);
+    if (team && code === scripts[0]) window.TEAM = team; // override the real team right after team.js
+  }
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   return window;
 }
@@ -196,4 +199,42 @@ test('countdown ticks every second', async () => {
   const first = read();
   await new Promise((r) => setTimeout(r, 1100));
   assert.notEqual(read(), first);
+});
+
+const TEAM = [
+  { name: 'Kelly Ejiofor', url: 'https://www.linkedin.com/in/kelly' },
+  { name: 'Eric Scherrer', url: '' },
+  { name: 'Michael Freiherz', url: 'https://www.linkedin.com/in/michael' },
+];
+
+test('team line lists every member; only members with a URL become LinkedIn links', () => {
+  const window = boot({ team: TEAM });
+  const doc = window.document;
+  const line = doc.querySelector('#about .team');
+  assert.equal(line.querySelector('.team-label').textContent, window.I18N.de['about.team']);
+  const members = [...line.querySelectorAll('.team-member')];
+  assert.deepEqual(members.map((m) => m.textContent), TEAM.map((m) => m.name));
+  assert.equal(members[0].tagName, 'A');
+  assert.equal(members[0].getAttribute('href'), TEAM[0].url);
+  assert.equal(members[0].getAttribute('target'), '_blank');
+  assert.equal(members[0].getAttribute('rel'), 'noopener');
+  assert.equal(members[1].tagName, 'SPAN');
+  assert.equal(members[2].tagName, 'A');
+  assert.equal(line.textContent, 'Team: Kelly Ejiofor, Eric Scherrer und Michael Freiherz');
+});
+
+test('team line uses the localised conjunction and no longer lives in about.text', () => {
+  const window = boot({ url: 'http://localhost/?lang=en', team: TEAM });
+  const doc = window.document;
+  assert.equal(doc.querySelector('#about .team').textContent, 'Team: Kelly Ejiofor, Eric Scherrer and Michael Freiherz');
+  for (const lang of ['de', 'fr', 'en']) assert.ok(!window.I18N[lang]['about.text'].includes('Freiherz'), `${lang} about.text still names the team`);
+  doc.querySelector('.lang-switch [data-lang=fr]').click();
+  assert.equal(doc.querySelector('#about .team').textContent, 'Équipe : Kelly Ejiofor, Eric Scherrer et Michael Freiherz');
+});
+
+test('the real team is wired in', () => {
+  const doc = boot().document;
+  const names = [...doc.querySelectorAll('#about .team-member')].map((m) => m.textContent);
+  assert.deepEqual(names, ['Kelly Ejiofor', 'Eric Scherrer', 'Michael Freiherz']);
+  for (const m of doc.querySelectorAll('#about a.team-member')) assert.match(m.href, /^https:\/\/(www\.)?linkedin\.com\//);
 });
