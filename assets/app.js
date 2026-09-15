@@ -108,6 +108,69 @@
     });
     renderCountdown();
     renderTeam();
+    renderPartnerPanel();
+  }
+
+  // ---- supporting organisations: logo buttons + one shared description panel
+  var openPartner = null;
+
+  function partnerById(id) {
+    return (window.PARTNERS || []).filter(function (p) { return p.id === id; })[0] || null;
+  }
+
+  function renderPartnerPanel() {
+    var panel = document.getElementById('partner-panel');
+    if (!panel) return;
+    var partner = openPartner && partnerById(openPartner);
+    $$('#partners .partner').forEach(function (btn) {
+      btn.setAttribute('aria-expanded', String(btn.dataset.id === openPartner));
+    });
+    panel.innerHTML = '';
+    panel.hidden = !partner;
+    if (!partner) return;
+    var name = document.createElement('h3');
+    name.className = 'partner-name';
+    name.textContent = partner.name;
+    var text = document.createElement('p');
+    text.className = 'partner-text';
+    text.textContent = partner.description[lang] || partner.description.de || '';
+    panel.appendChild(name);
+    panel.appendChild(text);
+    if (partner.url) {
+      var link = document.createElement('a');
+      link.className = 'partner-link';
+      link.href = partner.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = t('partners.visit');
+      panel.appendChild(link);
+    }
+  }
+
+  function renderPartners() {
+    var grid = document.querySelector('#partners .partner-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (window.PARTNERS || []).forEach(function (partner) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'partner';
+      btn.dataset.id = partner.id;
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-controls', 'partner-panel');
+      var img = document.createElement('img');
+      img.src = partner.logo;
+      img.alt = partner.name;
+      img.loading = 'lazy';
+      btn.appendChild(img);
+      btn.addEventListener('click', function () {
+        openPartner = openPartner === partner.id ? null : partner.id;
+        renderPartnerPanel();
+      });
+      grid.appendChild(btn);
+    });
+    renderPartnerPanel();
   }
 
   // Wrap the QR in a link and enable the "open TWINT" button when a donate
@@ -129,6 +192,7 @@
 
   function init() {
     wireDonateLink();
+    renderPartners();
     applyLang(Logic.pickLang({
       query: new URLSearchParams(location.search).get('lang'),
       stored: readStored(),

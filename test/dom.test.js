@@ -15,7 +15,7 @@ const scripts = ['assets/config.js', 'assets/i18n.js', 'assets/logic.js', 'asset
 const windows = [];
 after(() => windows.forEach((w) => w.close()));
 
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, donateUrl } = {}) {
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, donateUrl, partners } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
@@ -29,6 +29,7 @@ function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team
     if (code === scripts[0]) { // override config.js values right after it ran
       if (team) window.TEAM = team;
       if (donateUrl !== undefined) window.DONATE_URL = donateUrl;
+      if (partners) window.PARTNERS = partners;
     }
   }
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
@@ -285,4 +286,89 @@ test('without a donate URL the QR is a plain image and the button is hidden', ()
 
 test('the "open TWINT" button is only shown on touch devices', () => {
   assert.match(read('assets/style.css'), /@media[^{]*\(hover:\s*none\)[^{]*\{[\s\S]*?\.qr-open/);
+});
+
+const PARTNERS = [
+  { id: 'a', name: 'Alpha AG', logo: 'assets/partners/alpha.svg', url: 'https://alpha.example', description: { de: 'Alpha DE', fr: 'Alpha FR', en: 'Alpha EN' } },
+  { id: 'b', name: 'Beta', logo: 'assets/partners/beta.svg', url: '', description: { de: 'Beta DE', fr: 'Beta FR', en: 'Beta EN' } },
+  { id: 'c', name: 'Gamma', logo: 'assets/partners/gamma.svg', url: '', description: { de: 'Gamma DE', fr: 'Gamma FR', en: 'Gamma EN' } },
+  { id: 'd', name: 'Delta', logo: 'assets/partners/delta.svg', url: '', description: { de: 'Delta DE', fr: 'Delta FR', en: 'Delta EN' } },
+];
+
+function bootPartners(opts = {}) {
+  return boot({ ...opts, partners: PARTNERS });
+}
+
+test('partners section sits between the donate and about sections with a translated title', () => {
+  const window = bootPartners({ url: 'http://localhost/?lang=fr' });
+  const doc = window.document;
+  const section = doc.querySelector('#partners');
+  assert.ok(section);
+  assert.equal(section.previousElementSibling.id, 'spenden');
+  assert.equal(section.nextElementSibling.id, 'about');
+  assert.equal(section.querySelector('h2').textContent, window.I18N.fr['partners.h2']);
+  assert.equal(window.I18N.en['partners.h2'], 'Supported by');
+});
+
+test('each partner is a logo button; the logo alt is the organisation name', () => {
+  const doc = bootPartners().document;
+  const buttons = [...doc.querySelectorAll('#partners .partner')];
+  assert.equal(buttons.length, 4);
+  buttons.forEach((b, i) => {
+    assert.equal(b.tagName, 'BUTTON');
+    assert.equal(b.getAttribute('type'), 'button');
+    assert.equal(b.getAttribute('aria-expanded'), 'false');
+    const img = b.querySelector('img');
+    assert.equal(img.getAttribute('src'), PARTNERS[i].logo);
+    assert.equal(img.alt, PARTNERS[i].name);
+  });
+  assert.equal(doc.querySelector('#partners .partner-panel').hidden, true);
+});
+
+test('clicking a logo expands its description; clicking again collapses; another logo switches', () => {
+  const window = bootPartners();
+  const doc = window.document;
+  const [a, b] = doc.querySelectorAll('#partners .partner');
+  const panel = doc.querySelector('#partners .partner-panel');
+
+  a.click();
+  assert.equal(a.getAttribute('aria-expanded'), 'true');
+  assert.equal(panel.hidden, false);
+  assert.equal(panel.querySelector('.partner-name').textContent, 'Alpha AG');
+  assert.equal(panel.querySelector('.partner-text').textContent, 'Alpha DE');
+  assert.equal(panel.querySelector('a.partner-link').getAttribute('href'), 'https://alpha.example');
+  assert.equal(panel.querySelector('a.partner-link').getAttribute('rel'), 'noopener');
+
+  b.click();
+  assert.equal(a.getAttribute('aria-expanded'), 'false');
+  assert.equal(b.getAttribute('aria-expanded'), 'true');
+  assert.equal(panel.querySelector('.partner-text').textContent, 'Beta DE');
+  assert.equal(panel.querySelector('a.partner-link'), null, 'no link without a URL');
+
+  b.click();
+  assert.equal(b.getAttribute('aria-expanded'), 'false');
+  assert.equal(panel.hidden, true);
+});
+
+test('an open partner description follows the language switch', () => {
+  const window = bootPartners();
+  const doc = window.document;
+  doc.querySelectorAll('#partners .partner')[2].click();
+  doc.querySelector('.lang-switch [data-lang=en]').click();
+  assert.equal(doc.querySelector('#partners .partner-text').textContent, 'Gamma EN');
+  assert.equal(doc.querySelector('#partners .partner-link'), null);
+});
+
+test('the real partner config has four entries whose logos exist on disk', () => {
+  const window = boot();
+  const partners = window.PARTNERS;
+  assert.equal(partners.length, 4);
+  const fs = require('node:fs');
+  const path = require('node:path');
+  for (const p of partners) {
+    assert.ok(p.id && p.name && p.logo, `partner ${JSON.stringify(p)} incomplete`);
+    assert.ok(fs.existsSync(path.join(__dirname, '..', p.logo)), `${p.logo} missing`);
+    for (const lang of ['de', 'fr', 'en']) assert.ok(p.description[lang], `${p.id} ${lang} description`);
+  }
+  assert.equal(window.document.querySelectorAll('#partners .partner').length, 4);
 });
