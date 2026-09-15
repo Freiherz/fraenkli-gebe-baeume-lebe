@@ -32,6 +32,6 @@ window.PARTNERS = [
     description: { de: '[Kurzbeschreibung NaKt]', fr: '[Description NaKt]', en: '[Short description NaKt]' } },
   { id: 'partner-3', name: 'Partner 3', logo: 'assets/partners/partner-3.svg', url: '',
     description: { de: '[Kurzbeschreibung Partner 3]', fr: '[Description partenaire 3]', en: '[Short description partner 3]' } },
-  { id: 'partner-4', name: 'Partner 4', logo: 'assets/partners/partner-4.svg', url: '',
-    description: { de: '[Kurzbeschreibung Partner 4]', fr: '[Description partenaire 4]', en: '[Short description partner 4]' } },
+  { id: 'zhaw-entrepreneurship', name: 'ZHAW Entrepreneurship', logo: 'assets/partners/zhaw-entrepreneurship.svg', url: '',
+    description: { de: '[Kurzbeschreibung ZHAW Entrepreneurship]', fr: '[Description ZHAW Entrepreneurship]', en: '[Short description ZHAW Entrepreneurship]' } },
 ];
