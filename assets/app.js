@@ -135,6 +135,13 @@
     text.className = 'partner-text';
     text.textContent = partner.description[lang] || partner.description.de || '';
     panel.appendChild(name);
+    var tagline = partner.tagline && (partner.tagline[lang] || partner.tagline.de);
+    if (tagline) {
+      var sub = document.createElement('p');
+      sub.className = 'partner-tagline';
+      sub.textContent = tagline;
+      panel.appendChild(sub);
+    }
     panel.appendChild(text);
     if (partner.url) {
       var link = document.createElement('a');

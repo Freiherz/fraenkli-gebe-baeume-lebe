@@ -500,6 +500,7 @@ button { font: inherit; color: inherit; }
   to   { opacity: 1; transform: none; }
 }
 .partner-name { font-size: 20px; }
+.partner-tagline { font-weight: 600; color: var(--leaf-1); margin-top: -4px; }
 .partner-text { color: var(--ink-2); max-width: 60em; }
 .partner-link { font-weight: 600; justify-self: start; }
 

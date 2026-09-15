@@ -289,7 +289,7 @@ test('the "open TWINT" button is only shown on touch devices', () => {
 });
 
 const PARTNERS = [
-  { id: 'a', name: 'Alpha AG', logo: 'assets/partners/alpha.svg', url: 'https://alpha.example', description: { de: 'Alpha DE', fr: 'Alpha FR', en: 'Alpha EN' } },
+  { id: 'a', name: 'Alpha AG', tagline: { de: 'Alpha Slogan DE', fr: 'Alpha Slogan FR', en: 'Alpha Slogan EN' }, logo: 'assets/partners/alpha.svg', url: 'https://alpha.example', description: { de: 'Alpha DE', fr: 'Alpha FR', en: 'Alpha EN' } },
   { id: 'b', name: 'Beta', logo: 'assets/partners/beta.svg', url: '', description: { de: 'Beta DE', fr: 'Beta FR', en: 'Beta EN' } },
   { id: 'c', name: 'Gamma', logo: 'assets/partners/gamma.svg', url: '', description: { de: 'Gamma DE', fr: 'Gamma FR', en: 'Gamma EN' } },
   { id: 'd', name: 'Delta', logo: 'assets/partners/delta.svg', url: '', description: { de: 'Delta DE', fr: 'Delta FR', en: 'Delta EN' } },
@@ -335,6 +335,7 @@ test('clicking a logo expands its description; clicking again collapses; another
   assert.equal(a.getAttribute('aria-expanded'), 'true');
   assert.equal(panel.hidden, false);
   assert.equal(panel.querySelector('.partner-name').textContent, 'Alpha AG');
+  assert.equal(panel.querySelector('.partner-tagline').textContent, 'Alpha Slogan DE');
   assert.equal(panel.querySelector('.partner-text').textContent, 'Alpha DE');
   assert.equal(panel.querySelector('a.partner-link').getAttribute('href'), 'https://alpha.example');
   assert.equal(panel.querySelector('a.partner-link').getAttribute('rel'), 'noopener');
@@ -343,6 +344,7 @@ test('clicking a logo expands its description; clicking again collapses; another
   assert.equal(a.getAttribute('aria-expanded'), 'false');
   assert.equal(b.getAttribute('aria-expanded'), 'true');
   assert.equal(panel.querySelector('.partner-text').textContent, 'Beta DE');
+  assert.equal(panel.querySelector('.partner-tagline'), null, 'no tagline element without a tagline');
   assert.equal(panel.querySelector('a.partner-link'), null, 'no link without a URL');
 
   b.click();
@@ -369,6 +371,8 @@ test('the real partner config has four entries whose logos exist on disk', () =>
     assert.ok(p.id && p.name && p.logo, `partner ${JSON.stringify(p)} incomplete`);
     assert.ok(fs.existsSync(path.join(__dirname, '..', p.logo)), `${p.logo} missing`);
     for (const lang of ['de', 'fr', 'en']) assert.ok(p.description[lang], `${p.id} ${lang} description`);
+    if (p.url) assert.match(p.url, /^https?:\/\//, `${p.id} url needs a scheme or it becomes a relative link`);
+    assert.ok(p.name.length <= 40, `${p.id} name is the organisation name (used as logo alt), not a slogan`);
   }
   assert.equal(window.document.querySelectorAll('#partners .partner').length, 4);
 });
