@@ -34,5 +34,23 @@ test('translate: falls back to de, then to the key itself', () => {
 });
 
 test('logic exposes only language helpers — no form leftovers', () => {
-  assert.deepEqual(Object.keys(Logic).sort(), ['LANGS', 'pickLang', 'translate']);
+  assert.deepEqual(Object.keys(Logic).sort(), ['LANGS', 'countdown', 'formatDeadline', 'pickLang', 'translate']);
+});
+
+const END = '2026-09-19T23:59:59+02:00';
+
+test('countdown: splits the remaining time into days/hours/minutes/seconds', () => {
+  const now = new Date('2026-09-16T10:29:14+02:00'); // 3d 13h 30m 45s before END
+  assert.deepEqual(Logic.countdown(END, now), { ended: false, days: 3, hours: 13, minutes: 30, seconds: 45 });
+});
+
+test('countdown: at and after the end it reports ended with zeros', () => {
+  assert.deepEqual(Logic.countdown(END, new Date('2026-09-19T23:59:59+02:00')), { ended: false, days: 0, hours: 0, minutes: 0, seconds: 0 });
+  assert.deepEqual(Logic.countdown(END, new Date('2026-09-20T00:00:00+02:00')), { ended: true, days: 0, hours: 0, minutes: 0, seconds: 0 });
+});
+
+test('formatDeadline: renders the Swiss-local end in each language', () => {
+  assert.match(Logic.formatDeadline(END, 'de'), /Samstag.*19\. September 2026.*23:59/);
+  assert.match(Logic.formatDeadline(END, 'fr'), /samedi,? 19 septembre 2026.*23:59/);
+  assert.match(Logic.formatDeadline(END, 'en'), /Saturday.*19 September 2026.*23:59/);
 });

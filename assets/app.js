@@ -26,6 +26,47 @@
     });
   }
 
+  function cell(value, unitKey) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cd-cell';
+    var v = document.createElement('span');
+    v.className = 'cd-value';
+    v.textContent = value;
+    var u = document.createElement('span');
+    u.className = 'cd-unit';
+    u.textContent = t(unitKey);
+    wrap.appendChild(v);
+    wrap.appendChild(u);
+    return wrap;
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  function renderCountdown() {
+    var el = document.getElementById('countdown');
+    if (!el) return;
+    var left = Logic.countdown(el.dataset.ends, new Date());
+    el.dataset.ended = String(left.ended);
+    el.innerHTML = '';
+    if (left.ended) { el.textContent = t('countdown.ended'); return; }
+
+    var label = document.createElement('span');
+    label.className = 'cd-label';
+    label.textContent = t('countdown.label');
+    var grid = document.createElement('div');
+    grid.className = 'cd-grid';
+    grid.appendChild(cell(String(left.days), 'countdown.days'));
+    grid.appendChild(cell(pad(left.hours), 'countdown.hours'));
+    grid.appendChild(cell(pad(left.minutes), 'countdown.minutes'));
+    grid.appendChild(cell(pad(left.seconds), 'countdown.seconds'));
+    var until = document.createElement('span');
+    until.className = 'cd-until';
+    until.textContent = t('countdown.until') + ' ' + Logic.formatDeadline(el.dataset.ends, lang);
+    el.appendChild(label);
+    el.appendChild(grid);
+    el.appendChild(until);
+  }
+
   function applyLang(next) {
     lang = next;
     document.documentElement.lang = next;
@@ -37,6 +78,7 @@
     $$('.lang-switch button').forEach(function (btn) {
       btn.setAttribute('aria-pressed', String(btn.dataset.lang === next));
     });
+    renderCountdown();
   }
 
   function init() {
@@ -49,6 +91,7 @@
     $$('.lang-switch button').forEach(function (btn) {
       btn.addEventListener('click', function () { applyLang(btn.dataset.lang); });
     });
+    setInterval(renderCountdown, 1000);
   }
 
   if (document.readyState === 'loading') {

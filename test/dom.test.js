@@ -1,5 +1,5 @@
 'use strict';
-const test = require('node:test');
+const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM, VirtualConsole } = require('jsdom');
 const { read } = require('./helpers');
@@ -10,13 +10,20 @@ const scripts = ['assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/u
 // Boot the page in jsdom the way a browser would: HTML first, then the scripts
 // in order. `navLang` and `stored` stand in for the visitor's browser locale
 // and a previous visit.
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored } = {}) {
+// Every window is closed after the suite; the countdown's setInterval would
+// otherwise keep the process alive.
+const windows = [];
+after(() => windows.forEach((w) => w.close()));
+
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
   const { window } = dom;
+  windows.push(window);
   Object.defineProperty(window.navigator, 'language', { value: navLang, configurable: true });
   if (stored) window.localStorage.setItem('lang', stored);
+  if (ends) window.document.querySelector('#countdown').dataset.ends = ends;
   for (const code of scripts) window.eval(code);
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   return window;
@@ -129,4 +136,51 @@ test('ui.js: marks the document as scripted and reveals sections when Intersecti
 test('ui.js: ?theme=dark forces the dark palette for previews', () => {
   assert.equal(boot({ url: 'http://localhost/?theme=dark' }).document.documentElement.dataset.theme, 'dark');
   assert.equal(boot().document.documentElement.dataset.theme, undefined);
+});
+
+const FAR = '2099-01-01T00:00:00+01:00';
+
+test('countdown sits under the donate button and shows days/hours/minutes/seconds plus the end date', () => {
+  const window = boot({ ends: FAR });
+  const doc = window.document;
+  const cd = doc.querySelector('#countdown');
+  assert.equal(cd.previousElementSibling.className, 'hero-actions');
+  assert.equal(cd.dataset.ended, 'false');
+  const units = [...cd.querySelectorAll('.cd-unit')].map((u) => u.textContent);
+  assert.deepEqual(units, ['countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds'].map((k) => window.I18N.de[k]));
+  const values = [...cd.querySelectorAll('.cd-value')].map((v) => v.textContent);
+  assert.equal(values.length, 4);
+  assert.ok(Number(values[0]) > 1000, `days counted: ${values[0]}`);
+  assert.match(values[1], /^\d{2}$/);
+  assert.equal(cd.querySelector('.cd-label').textContent, window.I18N.de['countdown.label']);
+  assert.match(cd.querySelector('.cd-until').textContent, /^Endet am .*2099/);
+});
+
+test('countdown uses the real campaign end by default', () => {
+  const cd = boot().document.querySelector('#countdown');
+  assert.equal(cd.dataset.ends, '2026-09-19T23:59:59+02:00');
+});
+
+test('countdown after the end shows the ended message and no digits', () => {
+  const window = boot({ ends: '2000-01-01T00:00:00+01:00' });
+  const cd = window.document.querySelector('#countdown');
+  assert.equal(cd.dataset.ended, 'true');
+  assert.equal(cd.querySelector('.cd-value'), null);
+  assert.equal(cd.textContent.trim(), window.I18N.de['countdown.ended']);
+});
+
+test('countdown re-renders in the new language', () => {
+  const window = boot({ ends: FAR });
+  const doc = window.document;
+  doc.querySelector('.lang-switch [data-lang=fr]').click();
+  assert.equal(doc.querySelector('#countdown .cd-label').textContent, window.I18N.fr['countdown.label']);
+  assert.match(doc.querySelector('#countdown .cd-until').textContent, /^Se termine le .*2099/);
+});
+
+test('countdown ticks every second', async () => {
+  const window = boot({ ends: FAR });
+  const read = () => window.document.querySelector('#countdown .cd-cell:last-child .cd-value').textContent;
+  const first = read();
+  await new Promise((r) => setTimeout(r, 1100));
+  assert.notEqual(read(), first);
 });
