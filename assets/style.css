@@ -147,6 +147,10 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   color: var(--muted);
 }
+/* the gap between the eyebrow halves turns into a line break on phones */
+@media (max-width: 479px) {
+  .eyebrow-sep { display: block; height: 0; overflow: hidden; }
+}
 
 /* ---------- buttons ---------- */
 .btn {

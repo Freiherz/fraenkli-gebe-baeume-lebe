@@ -115,6 +115,19 @@ test('hero: single donate CTA scrolls to the donate section, tree animation is i
   assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
 });
 
+test('hero eyebrow is split into two spans around a separator that breaks on mobile', () => {
+  const window = boot({ url: 'http://localhost/?lang=fr' });
+  const eyebrow = window.document.querySelector('.hero .eyebrow');
+  const [a, b] = eyebrow.querySelectorAll('[data-i18n]');
+  assert.equal(a.textContent, window.I18N.fr['hero.eyebrow.a']);
+  assert.equal(b.textContent, window.I18N.fr['hero.eyebrow.b']);
+  const sep = eyebrow.querySelector('.eyebrow-sep');
+  assert.ok(sep, 'separator element between the halves');
+  assert.equal(sep.getAttribute('aria-hidden'), 'true');
+  assert.equal(sep.nextElementSibling, b);
+  assert.match(read('assets/style.css'), /\.eyebrow-sep[\s\S]*display:\s*block/, 'separator becomes a line break in CSS');
+});
+
 test('about section replaces the prize draw and is translated', () => {
   const window = boot({ url: 'http://localhost/?lang=en' });
   const doc = window.document;
