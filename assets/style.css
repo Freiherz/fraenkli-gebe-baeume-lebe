@@ -479,14 +479,14 @@ button { font: inherit; color: inherit; }
   padding: 18px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-s);
-  background: var(--surface);
+  background: #fff; /* logos are designed for white; keep it in dark mode too */
   cursor: pointer;
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .partner img { width: 100%; max-height: 72px; object-fit: contain; filter: grayscale(1); opacity: .8; transition: filter .2s ease, opacity .2s ease; }
 .partner:hover, .partner[aria-expanded="true"] { border-color: var(--leaf-1); transform: translateY(-2px); box-shadow: var(--shadow); }
 .partner:hover img, .partner[aria-expanded="true"] img { filter: none; opacity: 1; }
-.partner[aria-expanded="true"] { background: var(--surface-2); }
+.partner[aria-expanded="true"] { background: #f4f6ee; }
 .partner-panel {
   display: grid;
   gap: 10px;
