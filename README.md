@@ -39,9 +39,12 @@ test/                    node --test suite (jsdom for the page)
    ```
    and a real write — expect `{"ok":true,"code":"ok"}` and a new row in the sheet; running it twice yields `duplicate`:
    ```sh
-   curl -L -X POST '<WEB_APP_URL>' -d '{"email":"test@example.com","phone":"079 123 45 67","donated":"yes","why":"test","amount":1,"lang":"de","website":""}'
+   curl -L '<WEB_APP_URL>' --data '{"email":"test@example.com","phone":"079 123 45 67","donated":"yes","why":"test","amount":1,"lang":"de","website":""}'
    ```
-   Delete the test row afterwards.
+   Do **not** add `-X POST`: Apps Script answers with a 302 that must be followed
+   as GET, and `-X` forces POST onto the redirect (405 "Seite nicht gefunden").
+   A freshly created deployment can also answer "Seite nicht gefunden" for a
+   minute or two before it propagates. Delete the test row afterwards.
 
 After **any** change to `Code.gs`: Deploy → Manage deployments → edit → Version: **New version** → Deploy. The URL stays the same.
 
