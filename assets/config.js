@@ -25,8 +25,8 @@ window.PARTNERS = [
     },
     description: {
       de: 'Bridged ist mehr als nur eine studentisch geführte Unternehmensberatung an der ZHAW. Wir sind ein student-driven Startup Support – ein Raum, in dem Studierende echtes Unternehmertum üben können. Du willst anpacken und Zukunft gestalten? Schreib uns, wir freuen uns auf dich.',
-      fr: 'Bridged est bien plus qu’un cabinet de conseil géré par des étudiantes et étudiants de la ZHAW. Nous sommes un soutien aux startups porté par les étudiants – un espace où les étudiantes et étudiants peuvent s’exercer au véritable entrepreneuriat.',
-      en: 'Bridged is more than a student-run consultancy at ZHAW. We are student-driven startup support – a space where students can practise real entrepreneurship.',
+      fr: 'Bridged est bien plus qu’un cabinet de conseil géré par des étudiantes et étudiants de la ZHAW. Nous sommes un soutien aux startups porté par les étudiants – un espace où les étudiantes et étudiants peuvent s’exercer au véritable entrepreneuriat. Tu veux mettre la main à la pâte et façonner l’avenir ? Écris-nous, nous nous réjouissons de faire ta connaissance.',
+      en: 'Bridged is more than a student-run consultancy at ZHAW. We are student-driven startup support – a space where students can practise real entrepreneurship. Want to roll up your sleeves and shape the future? Drop us a line – we look forward to meeting you.',
     } },
   { id: 'nakt', name: 'NaKt', logo: 'assets/partners/NaKt.png', url: 'https://alias-zhaw.ch/kommissionen/nakt/',
     tagline: {

@@ -372,6 +372,11 @@ test('the real partner config has four entries whose logos exist on disk', () =>
     assert.ok(fs.existsSync(path.join(__dirname, '..', p.logo)), `${p.logo} missing`);
     for (const lang of ['de', 'fr', 'en']) assert.ok(p.description[lang], `${p.id} ${lang} description`);
     if (p.url) assert.match(p.url, /^https?:\/\//, `${p.id} url needs a scheme or it becomes a relative link`);
+    // no German sentence may survive untranslated inside the FR/EN texts
+    const deSentences = p.description.de.split(/(?<=[.!?])\s+/).filter((x) => x.length > 20);
+    for (const lang of ['fr', 'en']) {
+      for (const sentence of deSentences) assert.ok(!p.description[lang].includes(sentence), `${p.id} ${lang} still contains German: "${sentence}"`);
+    }
     assert.ok(p.name.length <= 40, `${p.id} name is the organisation name (used as logo alt), not a slogan`);
   }
   assert.equal(window.document.querySelectorAll('#partners .partner').length, 4);
