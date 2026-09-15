@@ -5,43 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Fränkli gebe, Bäume lebe – 1 CHF = 1 Baum</title>
   <meta name="description" content="Spende 1 Franken, wir pflanzen einen Baum. Ein Studierendenprojekt.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <nav class="lang-switch" aria-label="Sprache / Langue / Language">
-        <button type="button" data-lang="de" aria-pressed="true">DE</button>
-        <button type="button" data-lang="fr" aria-pressed="false">FR</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      </nav>
+
+<header class="site-head wrap">
+  <a class="brand" href="#top" aria-label="Fränkli gebe, Bäume lebe">
+    <span class="brand-mark" aria-hidden="true"><i></i></span>
+    <span class="brand-name">Fränkli gebe, Bäume lebe</span>
+  </a>
+  <nav class="lang-switch" aria-label="Sprache / Langue / Language">
+    <button type="button" data-lang="de" aria-pressed="true">DE</button>
+    <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow" data-i18n="hero.eyebrow"></p>
       <h1 data-i18n="title">Fränkli gebe, Bäume lebe</h1>
       <p class="tagline" data-i18n="tagline"></p>
-    </header>
+      <div class="hero-actions">
+        <a class="btn btn-accent" href="#spenden" data-i18n="hero.cta"></a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="leaves"><i></i><i></i><i></i><i></i><i></i></div>
+      <svg class="tree" viewBox="0 0 320 360" width="320" height="360" focusable="false">
+        <ellipse class="ground" cx="160" cy="334" rx="130" ry="9"/>
+        <ellipse class="soil" cx="160" cy="330" rx="26" ry="6"/>
+        <path class="trunk" pathLength="1" d="M160 330 C 163 292, 155 252, 160 196"/>
+        <path class="branch b1" pathLength="1" d="M159 262 C 148 246, 130 238, 110 226"/>
+        <path class="branch b2" pathLength="1" d="M160 236 C 172 220, 192 210, 214 202"/>
+        <g class="canopy">
+          <circle class="c c2" cx="104" cy="190" r="48"/>
+          <circle class="c c3" cx="218" cy="184" r="52"/>
+          <circle class="c c1" cx="160" cy="150" r="72"/>
+          <circle class="c c4" cx="132" cy="120" r="42"/>
+          <circle class="c c5" cx="192" cy="126" r="40"/>
+          <circle class="c c6" cx="160" cy="98" r="30"/>
+        </g>
+        <g class="coin">
+          <circle cx="160" cy="0" r="15"/>
+          <circle class="coin-ring" cx="160" cy="0" r="10"/>
+          <text x="160" y="4.5" text-anchor="middle">1</text>
+        </g>
+      </svg>
+    </div>
+  </section>
 
-    <main>
-      <section class="card" id="donate">
+  <section id="spenden" class="donate" data-reveal>
+    <div class="wrap donate-grid">
+      <div class="donate-copy">
         <h2 data-i18n="donate.h2"></h2>
         <p class="lead" data-i18n="donate.lead"></p>
-        <img id="qr" class="qr" src="assets/qr-placeholder.svg" width="240" height="240" alt="" data-i18n-alt="donate.qr.alt">
         <ol class="steps" data-i18n-list="donate.steps"></ol>
         <p class="note" data-i18n="donate.note"></p>
-      </section>
+      </div>
+      <figure class="qr-card">
+        <img id="qr" src="assets/qr-placeholder.svg" width="280" height="280" alt="" data-i18n-alt="donate.qr.alt">
+        <figcaption>
+          <span class="qr-label" data-i18n="donate.qr.label"></span>
+          <span class="qr-amount" data-i18n="donate.qr.hint"></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 
-      <section class="card" id="about">
-        <h2 data-i18n="about.h2"></h2>
-        <p data-i18n="about.text"></p>
-      </section>
-    </main>
+  <section id="about" class="about wrap" data-reveal>
+    <div class="about-card">
+      <h2 data-i18n="about.h2"></h2>
+      <p class="lead" data-i18n="about.text"></p>
+    </div>
+  </section>
+</main>
 
-    <footer>
-      <p data-i18n="footer.note"></p>
-      <p class="privacy" data-i18n="footer.privacy"></p>
-    </footer>
-  </div>
+<footer class="site-foot wrap">
+  <p data-i18n="footer.note"></p>
+  <p class="privacy" data-i18n="footer.privacy"></p>
+</footer>
 
-  <script src="assets/i18n.js"></script>
-  <script src="assets/logic.js"></script>
-  <script src="assets/app.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/logic.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/ui.js"></script>
 </body>
 </html>

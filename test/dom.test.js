@@ -5,7 +5,7 @@ const { JSDOM, VirtualConsole } = require('jsdom');
 const { read } = require('./helpers');
 
 const html = read('index.html');
-const scripts = ['assets/i18n.js', 'assets/logic.js', 'assets/app.js'].map(read);
+const scripts = ['assets/i18n.js', 'assets/logic.js', 'assets/app.js', 'assets/ui.js'].map(read);
 
 // Boot the page in jsdom the way a browser would: HTML first, then the scripts
 // in order. `navLang` and `stored` stand in for the visitor's browser locale
@@ -89,10 +89,44 @@ test('the QR code is present and points at the swappable asset', () => {
   assert.ok(qr.alt.length > 0);
 });
 
-test('all asset references are relative (GitHub Pages sub-path)', () => {
+test('all asset references are relative (GitHub Pages sub-path); only Google Fonts may be external', () => {
   const doc = boot().document;
   for (const el of doc.querySelectorAll('link[href], script[src], img[src]')) {
     const ref = el.getAttribute('href') || el.getAttribute('src');
+    if (/^https:\/\/fonts\.(googleapis|gstatic)\.com/.test(ref)) continue;
     assert.ok(!ref.startsWith('/') && !ref.startsWith('http'), `absolute reference: ${ref}`);
   }
+});
+
+test('hero: single donate CTA scrolls to the donate section, tree animation is inline SVG', () => {
+  const doc = boot().document;
+  const ctas = doc.querySelectorAll('.hero-actions a');
+  assert.equal(ctas.length, 1, 'exactly one CTA — the prize-draw button is gone');
+  assert.equal(ctas[0].getAttribute('href'), '#spenden');
+  assert.ok(doc.querySelector('#spenden'), 'donate section has the id the CTA targets');
+  assert.ok(doc.querySelector('.hero-art svg.tree .coin'), 'coin + tree SVG present');
+  assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
+});
+
+test('about section replaces the prize draw and is translated', () => {
+  const window = boot({ url: 'http://localhost/?lang=en' });
+  const doc = window.document;
+  const about = doc.querySelector('#about');
+  assert.ok(about);
+  assert.equal(about.querySelector('h2').textContent, window.I18N.en['about.h2']);
+  assert.equal(doc.querySelector('.site-foot .privacy').textContent, window.I18N.en['footer.privacy']);
+  assert.equal(doc.querySelector('.qr-card .qr-label').textContent, window.I18N.en['donate.qr.label']);
+});
+
+test('ui.js: marks the document as scripted and reveals sections when IntersectionObserver is missing', () => {
+  const doc = boot().document;
+  assert.ok(doc.documentElement.classList.contains('js'));
+  const targets = doc.querySelectorAll('[data-reveal]');
+  assert.ok(targets.length >= 2);
+  for (const el of targets) assert.ok(el.classList.contains('is-visible'), 'fallback reveal applied');
+});
+
+test('ui.js: ?theme=dark forces the dark palette for previews', () => {
+  assert.equal(boot({ url: 'http://localhost/?theme=dark' }).document.documentElement.dataset.theme, 'dark');
+  assert.equal(boot().document.documentElement.dataset.theme, undefined);
 });

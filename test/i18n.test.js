@@ -51,6 +51,14 @@ test('no prize-draw or form strings remain', () => {
   }
 });
 
+test('hero and QR card strings exist in every language', () => {
+  for (const lang of LANGS) {
+    for (const key of ['hero.eyebrow', 'hero.cta', 'donate.qr.label', 'donate.qr.hint']) {
+      assert.ok(I18N[lang][key], `${lang}.${key}`);
+    }
+  }
+});
+
 test('privacy line names GitHub Pages hosting in every language', () => {
   for (const lang of LANGS) assert.match(I18N[lang]['footer.privacy'], /GitHub Pages/);
 });

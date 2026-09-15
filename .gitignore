@@ -1,2 +1,4 @@
 node_modules/
 .DS_Store
+# Claude Design source (contains the old prize-draw variant; must not be served)
+design/
