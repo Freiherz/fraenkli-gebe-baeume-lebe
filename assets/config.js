@@ -17,7 +17,7 @@ window.TEAM = [
 // fill in the descriptions. `url` needs the https:// scheme; `tagline` is
 // optional and shown under the name in the expanded panel.
 window.PARTNERS = [
-  { id: 'bridged', name: 'Bridged', logo: 'assets/partners/bridged.png', url: 'https://www.bridged.ch',
+  { id: 'bridged', name: 'Bridged', logo: 'assets/partners/bridged.png', url: 'https://www.bridged.ch/de/studierende',
     tagline: {
       de: 'Die Brücke zwischen Hörsaal und Wirtschaft',
       fr: 'Le pont entre l’auditoire et l’économie',
