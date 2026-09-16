@@ -36,7 +36,7 @@ window.I18N = {
     'about.and': 'und',
     'footer.note': 'Ein gemeinnütziges Projekt 𐂷 Verantwortlich: Michael Freiherz 𐂷 Kontakt: freihmic@students.zhaw.ch',
     'footer.legal': 'Impressum',
-    'footer.privacy': 'Diese Seite erhebt keine persönlichen Daten. Sie wird über GitHub Pages ausgeliefert; GitHub kann dabei rein technische Zugriffsdaten (z. B. IP-Adresse) protokollieren.',
+    'footer.privacy': 'Diese Seite setzt keine Cookies. Besuche werden anonym mit GoatCounter gezählt (ohne Speicherung der IP-Adresse). Sie wird über GitHub Pages ausgeliefert; GitHub kann dabei rein technische Zugriffsdaten (z. B. IP-Adresse) protokollieren.',
   },
 
   fr: {
@@ -74,7 +74,7 @@ window.I18N = {
     'about.and': 'et',
     'footer.note': 'Un projet d’utilité publique 𐂷 Responsable : Michael Freiherz 𐂷 Contact : freihmic@students.zhaw.ch',
     'footer.legal': 'Mentions légales',
-    'footer.privacy': 'Ce site ne collecte aucune donnée personnelle. Il est hébergé sur GitHub Pages ; GitHub peut enregistrer des données d’accès purement techniques (p. ex. l’adresse IP).',
+    'footer.privacy': 'Ce site n’utilise pas de cookies. Les visites sont comptées anonymement avec GoatCounter (sans enregistrement de l’adresse IP). Il est hébergé sur GitHub Pages ; GitHub peut enregistrer des données d’accès purement techniques (p. ex. l’adresse IP).',
   },
 
   en: {
@@ -112,6 +112,6 @@ window.I18N = {
     'about.and': 'and',
     'footer.note': 'A non-profit project 𐂷 Responsible: Michael Freiherz 𐂷 Contact: freihmic@students.zhaw.ch',
     'footer.legal': 'Legal notice',
-    'footer.privacy': 'This site collects no personal data. It is served via GitHub Pages; GitHub may log purely technical access data (e.g. IP address).',
+    'footer.privacy': 'This site sets no cookies. Visits are counted anonymously with GoatCounter (no IP address stored). It is served via GitHub Pages; GitHub may log purely technical access data (e.g. IP address).',
   },
 };

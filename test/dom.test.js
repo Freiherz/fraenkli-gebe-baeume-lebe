@@ -106,6 +106,18 @@ test('the prize-draw form is gone', () => {
   assert.ok(!html.includes('script.google.com'), 'no Apps Script URL left in the page');
 });
 
+test('analytics: GoatCounter script is loaded async and both donate links are counted as events', () => {
+  const doc = boot().document;
+  const script = doc.querySelector('script[data-goatcounter]');
+  assert.ok(script, 'GoatCounter script present');
+  assert.equal(script.getAttribute('data-goatcounter'), 'https://franke-lah.goatcounter.com/count');
+  assert.equal(script.getAttribute('src'), 'https://gc.zgo.at/count.js', 'explicit https, not protocol-relative');
+  assert.ok(script.hasAttribute('async'), 'never blocks rendering');
+  assert.equal(doc.querySelector('#hero-cta').getAttribute('data-goatcounter-click'), 'click-hero-button');
+  assert.equal(doc.querySelector('#qr-link').getAttribute('data-goatcounter-click'), 'click-qr-code');
+  assert.equal(doc.querySelectorAll('[data-goatcounter-click]').length, 2);
+});
+
 test('the QR code is present and points at the swappable asset', () => {
   const doc = boot().document;
   const qr = doc.querySelector('#qr');
@@ -114,11 +126,12 @@ test('the QR code is present and points at the swappable asset', () => {
   assert.ok(qr.alt.length > 0);
 });
 
-test('all asset references are relative (GitHub Pages sub-path); only Google Fonts may be external', () => {
+test('all asset references are relative (GitHub Pages sub-path); only Google Fonts and GoatCounter may be external', () => {
   const doc = boot().document;
   for (const el of doc.querySelectorAll('link[href], script[src], img[src]')) {
     const ref = el.getAttribute('href') || el.getAttribute('src');
     if (/^https:\/\/fonts\.(googleapis|gstatic)\.com/.test(ref)) continue;
+    if (ref === 'https://gc.zgo.at/count.js') continue; // analytics, see below
     assert.ok(!ref.startsWith('/') && !ref.startsWith('http'), `absolute reference: ${ref}`);
   }
 });
