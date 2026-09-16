@@ -19,6 +19,17 @@ docs/design-brief.md      prompt for a visual redesign
 test/                     node --test suite (jsdom for the page)
 ```
 
+## Trees counter
+
+`assets/trees.json` holds the number of trees financed so far (1 CHF = 1
+tree). `.github/workflows/trees.yml` regenerates it every 10 minutes with
+`scripts/trees.js`, which sums confirmed CHF transactions of the campaign's
+products via the Payrexx API and commits the file when the count changed.
+The workflow needs the repository secret `PAYREXX_SECRET` (Payrexx API key
+of the `bridged` instance). The page fetches the JSON; `TREES_PLANTED` in
+`config.js` is only the fallback until it has loaded. Manual refresh:
+Actions → "Update trees counter" → Run workflow.
+
 ## Before launch
 
 - `assets/qr.png` is the TWINT QR. The hero button opens `CTA_URL` and a

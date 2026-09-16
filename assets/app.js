@@ -42,11 +42,25 @@
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
 
-  // "Schon 18 Bäumli gepflanzt." — static count from config.js
+  // "Schon 23 Bäumli gepflanzt." — live count from assets/trees.json (written
+  // by the trees workflow every 10 minutes); config.js TREES_PLANTED is the
+  // fallback until the file has loaded or if it cannot be loaded.
+  var treesLive = null;
+
+  function loadTrees() {
+    if (typeof fetch !== 'function') return;
+    fetch('assets/trees.json', { cache: 'no-cache' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (data && typeof data.trees === 'number' && data.trees >= 0) { treesLive = data.trees; renderTrees(); }
+      })
+      .catch(function () { /* keep the fallback */ });
+  }
+
   function renderTrees() {
     var el = document.getElementById('trees');
     if (!el) return;
-    var n = window.TREES_PLANTED;
+    var n = treesLive === null ? window.TREES_PLANTED : treesLive;
     el.hidden = typeof n !== 'number' || !(n > 0);
     if (el.hidden) { el.textContent = ''; return; }
     el.textContent = t('trees.planted').replace('{n}', n.toLocaleString({ de: 'de-CH', fr: 'fr-CH', en: 'en-GB' }[lang] || 'de-CH'));
@@ -221,6 +235,7 @@
 
   function init() {
     wireDonateLinks();
+    loadTrees();
     renderPartners();
     applyLang(Logic.pickLang({
       query: new URLSearchParams(location.search).get('lang'),

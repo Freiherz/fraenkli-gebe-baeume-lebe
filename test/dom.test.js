@@ -15,7 +15,7 @@ const scripts = ['assets/config.js', 'assets/i18n.js', 'assets/logic.js', 'asset
 const windows = [];
 after(() => windows.forEach((w) => w.close()));
 
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, partners } = {}) {
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, partners, trees } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
@@ -24,6 +24,11 @@ function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team
   Object.defineProperty(window.navigator, 'language', { value: navLang, configurable: true });
   if (stored) window.localStorage.setItem('lang', stored);
   if (ends) window.document.querySelector('#countdown').dataset.ends = ends;
+  // assets/trees.json stand-in: `trees` = { ok, body } for a stubbed fetch, or
+  // 'reject' for a network failure; without it fetch stays undefined (no-JS path).
+  window.fetchCalls = [];
+  if (trees === 'reject') window.fetch = (url) => { window.fetchCalls.push(url); return Promise.reject(new Error('offline')); };
+  else if (trees) window.fetch = (url) => { window.fetchCalls.push(url); return Promise.resolve({ ok: trees.ok !== false, json: async () => trees.body }); };
   for (const code of scripts) {
     window.eval(code);
     if (code === scripts[0]) { // override config.js values right after it ran
@@ -229,26 +234,54 @@ test('countdown uses the real campaign end by default', () => {
   assert.equal(cd.dataset.ends, '2026-09-19T23:59:59+02:00');
 });
 
-test('trees planted: static count from config.js, shown right above the countdown', () => {
+const tick = () => new Promise((r) => setImmediate(r));
+
+test('trees planted: fallback count from config.js when no fetch is available, right above the countdown', () => {
   const window = boot();
   const doc = window.document;
   const el = doc.querySelector('#trees');
-  assert.equal(window.TREES_PLANTED, 18);
+  assert.equal(window.TREES_PLANTED, 23);
   assert.equal(el.hidden, false);
-  assert.equal(el.textContent, 'Schon 18 Bäumli gepflanzt.');
+  assert.equal(el.textContent, 'Schon 23 Bäumli gepflanzt.');
   assert.equal(el.nextElementSibling.id, 'countdown', 'sits directly in front of the countdown');
   doc.querySelector('.lang-switch [data-lang="en"]').click();
-  assert.equal(el.textContent, '18 little trees planted already.');
+  assert.equal(el.textContent, '23 little trees planted already.');
   doc.querySelector('.lang-switch [data-lang="fr"]').click();
-  assert.equal(el.textContent, 'Déjà 18 petits arbres plantés.');
+  assert.equal(el.textContent, 'Déjà 23 petits arbres plantés.');
   for (const lang of ['de', 'fr', 'en']) assert.match(window.I18N[lang]['trees.planted'], /\{n\}/);
 });
 
-test('trees planted: hidden while the count is zero or missing', () => {
+test('trees planted: live count from assets/trees.json wins over the fallback and survives a language switch', async () => {
+  const window = boot({ trees: { body: { trees: 41, chf: 41.5, updatedAt: '2026-09-17T10:00:00Z' } } });
+  const doc = window.document;
+  await tick(); await tick();
+  assert.deepEqual(window.fetchCalls, ['assets/trees.json']);
+  assert.equal(doc.querySelector('#trees').textContent, 'Schon 41 Bäumli gepflanzt.');
+  doc.querySelector('.lang-switch [data-lang="en"]').click();
+  assert.equal(doc.querySelector('#trees').textContent, '41 little trees planted already.');
+});
+
+test('trees planted: a failed or malformed fetch keeps the fallback', async () => {
+  for (const trees of ['reject', { ok: false, body: {} }, { body: { trees: 'many' } }, { body: null }]) {
+    const window = boot({ trees });
+    await tick(); await tick();
+    assert.equal(window.document.querySelector('#trees').textContent, 'Schon 23 Bäumli gepflanzt.', JSON.stringify(trees));
+  }
+});
+
+test('trees planted: hidden while the count is zero or missing', async () => {
   const window = boot();
   window.TREES_PLANTED = 0;
   window.document.querySelector('.lang-switch [data-lang="de"]').click();
   assert.equal(window.document.querySelector('#trees').hidden, true);
+  const live = boot({ trees: { body: { trees: 0 } } });
+  await tick(); await tick();
+  assert.equal(live.document.querySelector('#trees').hidden, true);
+});
+
+test('assets/trees.json is committed and well-formed (first paint before the workflow ever ran)', () => {
+  const json = JSON.parse(read('assets/trees.json'));
+  assert.ok(Number.isInteger(json.trees) && json.trees >= 0);
 });
 
 test('countdown after the end shows the ended message and no digits', () => {

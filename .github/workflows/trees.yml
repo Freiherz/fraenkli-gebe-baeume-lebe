@@ -1,0 +1,37 @@
+name: Update trees counter
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # every 10 minutes (GitHub may delay a few minutes)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trees
+  cancel-in-progress: false
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Count confirmed donations via the Payrexx API
+        env:
+          PAYREXX_SECRET: ${{ secrets.PAYREXX_SECRET }}
+          PAYREXX_INSTANCE: bridged
+        run: node scripts/trees.js
+      - name: Commit assets/trees.json if the count changed
+        run: |
+          if git diff --quiet -- assets/trees.json; then
+            echo "unchanged"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/trees.json
+          git commit -m "Trees counter: $(node -p "require('./assets/trees.json').trees") trees"
+          git push
