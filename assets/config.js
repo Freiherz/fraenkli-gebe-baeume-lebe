@@ -2,7 +2,7 @@
 
 // URL encoded in the TWINT QR code. On phones the QR (and an "open TWINT"
 // button) link here so the TWINT app opens directly. Empty = plain image.
-window.DONATE_URL = 'https://dispatcher.payrexx.com/twint/redirect/02:1d0c8e97a51c410491b1010c729b40cd#2e3470516dbb2adbaf8488e903e9b56f2fbe5b41#';
+window.DONATE_URL = '';
 
 // Team members shown in the About card. An empty url renders the name as
 // plain text instead of a link.

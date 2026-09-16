@@ -398,7 +398,7 @@ button { font: inherit; color: inherit; }
   gap: 36px;
   align-items: center;
 }
-@media (min-width: 840px) { .donate-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 64px; } }
+@media (min-width: 840px) { .donate-grid { grid-template-columns: minmax(0, 1fr) auto; gap: 64px; } }
 .donate-copy { display: grid; gap: 22px; }
 .donate h2 { font-size: clamp(38px, 6vw, 68px); }
 .donate .lead { color: rgba(244, 246, 238, .86); }
@@ -437,8 +437,7 @@ button { font: inherit; color: inherit; }
 .qr-card {
   margin: 0;
   justify-self: center;
-  width: 100%;
-  max-width: 360px;
+  width: min(100%, 360px);
   padding: 20px 20px 22px;
   background: #fff;
   color: #12291c;
@@ -452,6 +451,7 @@ button { font: inherit; color: inherit; }
 .qr-card:hover { transform: rotate(0deg) scale(1.01); }
 .qr-card img {
   width: 100%;
+  min-width: 240px;
   aspect-ratio: 1;
   height: auto;
   border-radius: 12px;
