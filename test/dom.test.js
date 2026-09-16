@@ -454,12 +454,23 @@ test('once open, the page hands Payrexx the handshake and follows its reported h
   assert.equal(frame.style.height, '1234px');
 });
 
-test('the modal has a single scroll container: the dialog never scrolls, only .pay-scroll does', () => {
-  const doc = boot().document;
+test('the modal has exactly one scroll container: the dialog itself', () => {
+  const window = boot();
+  const doc = window.document;
   const frame = doc.querySelector('#pay-frame');
-  assert.equal(frame.parentElement.className, 'pay-scroll');
+  assert.equal(doc.querySelector('.pay-scroll'), null, 'no inner scroll wrapper');
+  assert.equal(frame.parentElement.className, 'pay-body');
+  assert.equal(frame.getAttribute('scrolling'), 'no', 'the iframe never scrolls internally');
   const css = read('assets/style.css');
-  assert.match(css, /\.pay-dialog \{[^}]*overflow: hidden/);
-  assert.match(css, /\.pay-scroll \{[^}]*overflow-y: auto/);
-  assert.match(css, /#pay-frame \{[^}]*height: 100%/, 'frame fills the scroll area until Payrexx reports a height');
+  const dialogRule = css.match(/\.pay-dialog \{[^}]*\}/)[0];
+  assert.match(dialogRule, /overflow-y: auto/);
+  assert.doesNotMatch(dialogRule, /\n\s*height: /, 'dialog grows with its content up to max-height');
+  assert.match(dialogRule, /max-height: /);
+  assert.match(css, /\.pay-head \{[^}]*position: sticky/, 'close button stays reachable while scrolling');
+  assert.match(css, /#pay-frame \{[^}]*height: \d+px/, 'tall fallback until Payrexx reports its height');
+  assert.match(css, /html\.pay-open[^{]*\{[^}]*overflow: hidden/, 'page behind is locked');
+  doc.querySelector('#qr-button').click();
+  assert.equal(doc.documentElement.classList.contains('pay-open'), true);
+  doc.querySelector('.pay-close').click();
+  assert.equal(doc.documentElement.classList.contains('pay-open'), false);
 });

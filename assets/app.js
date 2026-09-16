@@ -195,6 +195,7 @@
     frame.title = t('donate.modal.title');
     frame.src = PAY_URL.replace('LANG', lang);
     if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
+    document.documentElement.classList.add('pay-open'); // lock the page behind: the dialog is the only scroller
   }
 
   function closePayDialog() {
@@ -203,6 +204,7 @@
     if (!dialog) return;
     if (typeof dialog.close === 'function' && dialog.open) dialog.close(); else dialog.removeAttribute('open');
     if (frame) { frame.removeAttribute('src'); frame.style.height = ''; }
+    document.documentElement.classList.remove('pay-open');
   }
 
   // Payrexx's CrossWindowCommunicator reports the form height only after the
