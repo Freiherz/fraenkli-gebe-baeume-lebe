@@ -180,13 +180,10 @@
     renderPartnerPanel();
   }
 
-  // ---- donate links: hero button and QR both open the URL encoded in the QR
+  // ---- hero button opens the URL encoded in the QR (config.js)
   function wireDonateLinks() {
-    if (!window.QR_URL) return;
-    ['hero-cta', 'qr-link'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.href = window.QR_URL;
-    });
+    var cta = document.getElementById('hero-cta');
+    if (cta && window.QR_URL) cta.href = window.QR_URL;
   }
 
   function init() {

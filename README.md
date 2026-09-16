@@ -14,16 +14,16 @@ assets/style.css          styling
 assets/i18n.js            DE/FR/EN strings
 assets/logic.js           pure helpers (language pick, translation lookup)
 assets/app.js             DOM wiring (language switch, text rendering)
-assets/qr.png             the TWINT QR code; clicking it opens the link it encodes
+assets/qr.png             the TWINT QR code (not clickable; scan only)
 docs/design-brief.md      prompt for a visual redesign
 test/                     node --test suite (jsdom for the page)
 ```
 
 ## Before launch
 
-- `assets/qr.png` is the TWINT QR. The QR and the hero button both link to
-  `QR_URL` (in `config.js`), the URL encoded in the QR — re-decode and update
-  it if the QR is regenerated.
+- `assets/qr.png` is the TWINT QR. The hero button links to `QR_URL` (in
+  `config.js`), the URL encoded in the QR — re-decode and update it if the
+  QR is regenerated.
 - Fill the placeholders in `assets/i18n.js` for all three languages:
   `[NAME]`, `[UNIVERSITÄT]`/`[UNIVERSITÉ]`/`[UNIVERSITY]`,
   `[KONTAKT-E-MAIL]`/`[E-MAIL DE CONTACT]`/`[CONTACT EMAIL]`.
