@@ -393,6 +393,14 @@ test('the QR is a link to the URL it encodes, opened in a new tab', () => {
   assert.equal(link.getAttribute('href'), doc.querySelector('#hero-cta').getAttribute('href'), 'both entry points share one URL');
 });
 
+test('the donate links carry the QR URL in the HTML itself — no JS (or a stale cached script) needed', () => {
+  const html = read('index.html');
+  const hrefs = [...html.matchAll(/id="(hero-cta|qr-link)"[^>]*href="([^"]*)"/g)].map((m) => m[2]);
+  assert.equal(hrefs.length, 2);
+  const window = boot();
+  for (const href of hrefs) assert.equal(href, window.QR_URL, 'static href matches config.js');
+});
+
 test('the payment modal is gone entirely', () => {
   const window = boot();
   const doc = window.document;
