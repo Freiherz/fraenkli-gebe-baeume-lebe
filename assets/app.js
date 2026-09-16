@@ -101,7 +101,6 @@
     $$('[data-i18n-alt]').forEach(function (el) { el.alt = t(el.dataset.i18nAlt); });
     // Eyebrow separator only when both halves exist (empty .b = single line)
     $$('.eyebrow-sep').forEach(function (el) { el.hidden = !t('hero.eyebrow.b'); });
-    $$('.pay-close').forEach(function (el) { el.setAttribute('aria-label', t('donate.modal.close')); });
     $$('[data-i18n-aria-label]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)); });
     $$('[data-i18n-list]').forEach(function (el) { renderList(el, t(el.dataset.i18nList)); });
     $$('.lang-switch button').forEach(function (btn) {
@@ -181,73 +180,17 @@
     renderPartnerPanel();
   }
 
-  // ---- payment modal: QR click opens Payrexx's page in a <dialog>
-  var PAYREXX_ORIGIN = 'https://bridged.payrexx.com';
-  var PAY_URL = PAYREXX_ORIGIN + '/LANG/pay?cid=fb16eb5d';
-
-  function payDialog() { return document.getElementById('pay-dialog'); }
-  function payFrame() { return document.getElementById('pay-frame'); }
-
-  function openPayDialog() {
-    var dialog = payDialog();
-    var frame = payFrame();
-    if (!dialog || !frame) return;
-    frame.title = t('donate.modal.title');
-    frame.src = PAY_URL.replace('LANG', lang);
-    if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
-    document.documentElement.classList.add('pay-open'); // lock the page behind: the dialog is the only scroller
-  }
-
-  function closePayDialog() {
-    var dialog = payDialog();
-    var frame = payFrame();
-    if (!dialog) return;
-    if (typeof dialog.close === 'function' && dialog.open) dialog.close(); else dialog.removeAttribute('open');
-    if (frame) { frame.removeAttribute('src'); frame.style.height = ''; }
-    document.documentElement.classList.remove('pay-open');
-  }
-
-  // Payrexx's CrossWindowCommunicator reports the form height only after the
-  // parent posts {origin, integrationMode}; replies are JSON strings keyed by
-  // tenant: {"payrexx":{"height":"1234px"}}.
-  function handshakePayrexx() {
-    var frame = payFrame();
-    if (!frame || !frame.contentWindow || !frame.getAttribute('src')) return;
-    frame.contentWindow.postMessage(
-      JSON.stringify({ origin: location.origin, integrationMode: 'modal' }),
-      PAYREXX_ORIGIN
-    );
-  }
-
-  function onPayrexxMessage(event) {
-    if (event.origin !== PAYREXX_ORIGIN || typeof event.data !== 'string') return;
-    var data;
-    try { data = JSON.parse(event.data); } catch (e) { return; }
-    if (!data || typeof data !== 'object') return;
-    var frame = payFrame();
-    if (!frame) return;
-    Object.keys(data).forEach(function (key) {
-      var height = data[key] && data[key].height;
-      if (typeof height === 'string' && /^\d+(\.\d+)?px$/.test(height)) frame.style.height = height;
+  // ---- donate links: hero button and QR both open the URL encoded in the QR
+  function wireDonateLinks() {
+    if (!window.QR_URL) return;
+    ['hero-cta', 'qr-link'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.href = window.QR_URL;
     });
   }
 
-  function wirePayDialog() {
-    var dialog = payDialog();
-    var button = document.getElementById('qr-button');
-    if (!dialog || !button) return;
-    button.addEventListener('click', openPayDialog);
-    var cta = document.getElementById('hero-cta');
-    if (cta) cta.addEventListener('click', function (e) { e.preventDefault(); openPayDialog(); });
-    dialog.querySelector('.pay-close').addEventListener('click', closePayDialog);
-    dialog.addEventListener('click', function (e) { if (e.target === dialog) closePayDialog(); }); // backdrop
-    dialog.addEventListener('close', closePayDialog); // Escape key
-    payFrame().addEventListener('load', handshakePayrexx);
-    window.addEventListener('message', onPayrexxMessage);
-  }
-
   function init() {
-    wirePayDialog();
+    wireDonateLinks();
     renderPartners();
     applyLang(Logic.pickLang({
       query: new URLSearchParams(location.search).get('lang'),

@@ -123,18 +123,16 @@ test('all asset references are relative (GitHub Pages sub-path); only Google Fon
   }
 });
 
-test('hero: single donate CTA opens the payment modal, tree animation is inline SVG', () => {
+test('hero: single donate CTA opens the QR link in a new tab, tree animation is inline SVG', () => {
   const window = boot();
   const doc = window.document;
   const ctas = doc.querySelectorAll('.hero-actions a');
   assert.equal(ctas.length, 1, 'exactly one CTA — the prize-draw button is gone');
-  assert.equal(ctas[0].getAttribute('href'), '#spenden', 'no-JS fallback scrolls to the QR');
-  assert.equal(ctas[0].getAttribute('aria-haspopup'), 'dialog');
-  assert.equal(window.QR_URL, undefined, 'no separate TWINT link; both entry points use the modal');
-  const dialog = doc.querySelector('#pay-dialog');
-  ctas[0].dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
-  assert.equal(dialog.open, true, 'hero button opens the payment modal');
-  assert.equal(doc.querySelector('#pay-frame').getAttribute('src'), 'https://bridged.payrexx.com/de/pay?cid=fb16eb5d');
+  assert.equal(ctas[0].getAttribute('href'), window.QR_URL, 'CTA goes where the QR goes');
+  assert.match(window.QR_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
+  assert.equal(ctas[0].getAttribute('target'), '_blank');
+  assert.equal(ctas[0].getAttribute('rel'), 'noopener');
+  assert.ok(doc.querySelector('#spenden'), 'donate section still exists');
   assert.ok(doc.querySelector('.hero-art svg.tree .coin'), 'coin + tree SVG present');
   assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
 });
@@ -383,94 +381,27 @@ test('the QR column is bounded so a large image cannot squeeze the text column',
   assert.ok(!/\.donate-grid \{[^}]*\bauto\b/.test(css), 'no auto-sized column in the donate grid');
 });
 
-const PAY_URL = 'https://bridged.payrexx.com/LANG/pay?cid=fb16eb5d';
-
-test('the QR is a button that opens the Payrexx payment page in a modal', () => {
+test('the QR is a link to the URL it encodes, opened in a new tab', () => {
   const window = boot();
   const doc = window.document;
-  const qrButton = doc.querySelector('button#qr-button');
-  assert.ok(qrButton, 'QR wrapped in a button');
-  assert.equal(qrButton.querySelector('#qr').id, 'qr');
-  assert.equal(qrButton.getAttribute('aria-haspopup'), 'dialog');
-  const dialog = doc.querySelector('dialog#pay-dialog');
-  const frame = dialog.querySelector('iframe#pay-frame');
-  assert.equal(dialog.open, false);
-  assert.equal(frame.getAttribute('src'), null, 'nothing loaded until opened');
-
-  qrButton.click();
-  assert.equal(dialog.open, true);
-  assert.equal(frame.getAttribute('src'), PAY_URL.replace('LANG', 'de'));
-  assert.equal(frame.getAttribute('allow'), 'payment *');
-  assert.equal(frame.getAttribute('title'), window.I18N.de['donate.modal.title']);
-  assert.equal(dialog.querySelector('.pay-close').getAttribute('aria-label'), window.I18N.de['donate.modal.close']);
+  const link = doc.querySelector('a#qr-link');
+  assert.ok(link, 'QR wrapped in a link');
+  assert.equal(link.querySelector('#qr').id, 'qr');
+  assert.equal(link.getAttribute('href'), window.QR_URL);
+  assert.equal(link.getAttribute('target'), '_blank');
+  assert.equal(link.getAttribute('rel'), 'noopener');
+  assert.equal(link.getAttribute('href'), doc.querySelector('#hero-cta').getAttribute('href'), 'both entry points share one URL');
 });
 
-test('the modal closes via its button and unloads the payment page', () => {
-  const window = boot({ url: 'http://localhost/?lang=fr' });
-  const doc = window.document;
-  doc.querySelector('#qr-button').click();
-  const dialog = doc.querySelector('#pay-dialog');
-  const frame = doc.querySelector('#pay-frame');
-  assert.equal(frame.getAttribute('src'), PAY_URL.replace('LANG', 'fr'));
-  dialog.querySelector('.pay-close').click();
-  assert.equal(dialog.open, false);
-  assert.equal(frame.getAttribute('src'), null);
-});
-
-test('clicking the backdrop closes the modal', () => {
+test('the payment modal is gone entirely', () => {
   const window = boot();
   const doc = window.document;
-  doc.querySelector('#qr-button').click();
-  const dialog = doc.querySelector('#pay-dialog');
-  dialog.dispatchEvent(new window.MouseEvent('click', { bubbles: true })); // target is the dialog itself = backdrop
-  assert.equal(dialog.open, false);
-  doc.querySelector('#qr-button').click();
-  dialog.querySelector('.pay-body').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-  assert.equal(dialog.open, true, 'clicks inside the content do not close');
-});
-
-test('the "open TWINT" button and DONATE_URL are gone', () => {
-  const window = boot();
-  assert.equal(window.document.querySelector('.qr-open'), null);
-  assert.equal(window.document.querySelector('a#qr-link'), null);
+  assert.equal(doc.querySelector('dialog, iframe, #pay-dialog, #pay-frame, .pay-close'), null);
+  assert.equal(doc.querySelector('.qr-open'), null);
   assert.equal(window.DONATE_URL, undefined);
-  assert.equal(window.I18N.de['donate.qr.open'], undefined);
-});
-
-test('once open, the page hands Payrexx the handshake and follows its reported height', () => {
-  const window = boot();
-  const doc = window.document;
-  doc.querySelector('#qr-button').click();
-  const frame = doc.querySelector('#pay-frame');
-  const sent = [];
-  frame.contentWindow.postMessage = (msg, target) => sent.push({ msg, target });
-  frame.dispatchEvent(new window.Event('load'));
-  assert.equal(sent.length, 1);
-  assert.equal(sent[0].target, 'https://bridged.payrexx.com');
-  assert.deepEqual(JSON.parse(sent[0].msg), { origin: 'http://localhost', integrationMode: 'modal' });
-  window.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ payrexx: { height: '1234px' } }), origin: 'https://bridged.payrexx.com' }));
-  assert.equal(frame.style.height, '1234px');
-  window.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ payrexx: { height: '999px' } }), origin: 'https://evil.example' }));
-  assert.equal(frame.style.height, '1234px');
-});
-
-test('the modal has exactly one scroll container: the dialog itself', () => {
-  const window = boot();
-  const doc = window.document;
-  const frame = doc.querySelector('#pay-frame');
-  assert.equal(doc.querySelector('.pay-scroll'), null, 'no inner scroll wrapper');
-  assert.equal(frame.parentElement.className, 'pay-body');
-  assert.equal(frame.getAttribute('scrolling'), 'no', 'the iframe never scrolls internally');
-  const css = read('assets/style.css');
-  const dialogRule = css.match(/\.pay-dialog \{[^}]*\}/)[0];
-  assert.match(dialogRule, /overflow-y: auto/);
-  assert.doesNotMatch(dialogRule, /\n\s*height: /, 'dialog grows with its content up to max-height');
-  assert.match(dialogRule, /max-height: /);
-  assert.match(css, /\.pay-head \{[^}]*position: sticky/, 'close button stays reachable while scrolling');
-  assert.match(css, /#pay-frame \{[^}]*height: \d+px/, 'tall fallback until Payrexx reports its height');
-  assert.match(css, /html\.pay-open[^{]*\{[^}]*overflow: hidden/, 'page behind is locked');
-  doc.querySelector('#qr-button').click();
-  assert.equal(doc.documentElement.classList.contains('pay-open'), true);
-  doc.querySelector('.pay-close').click();
-  assert.equal(doc.documentElement.classList.contains('pay-open'), false);
+  for (const lang of ['de', 'fr', 'en']) {
+    for (const key of Object.keys(window.I18N[lang])) assert.doesNotMatch(key, /modal/, `${lang}: ${key}`);
+  }
+  assert.doesNotMatch(read('assets/style.css'), /pay-dialog|pay-frame|pay-open/);
+  assert.doesNotMatch(read('assets/app.js'), /payrexx|postMessage|showModal/i);
 });

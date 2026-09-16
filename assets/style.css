@@ -470,54 +470,6 @@ button { font: inherit; color: inherit; }
 .qr-button:hover img { transform: scale(1.01); }
 .qr-button img { transition: transform .2s ease; }
 
-/* ---------- payment modal ----------
-   Exactly one scroll container: the <dialog> itself. The iframe never scrolls
-   (scrolling="no", tall fallback height) and grows to whatever height Payrexx
-   reports; the page behind is locked while the dialog is open. */
-.pay-dialog {
-  width: min(100% - 32px, 520px);
-  max-height: min(100% - 32px, 92dvh);
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius);
-  background: #fff;
-  color: #12291c;
-  box-shadow: var(--shadow);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-@media (max-width: 719px) {
-  .pay-dialog { width: 100%; max-width: none; max-height: 100dvh; border-radius: 0; margin: 0; }
-}
-.pay-dialog::backdrop { background: rgba(18, 41, 28, .55); backdrop-filter: blur(2px); }
-html.pay-open, html.pay-open body { overflow: hidden; }
-.pay-head {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px 14px 20px;
-  background: #fff;
-  border-bottom: 1px solid rgba(18, 41, 28, .12);
-}
-.pay-head h2 { font-size: 18px; }
-.pay-close {
-  width: 40px; height: 40px;
-  flex: none;
-  border: 0;
-  border-radius: 50%;
-  background: #eef0e5;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-}
-.pay-close:hover { background: #dfe4d3; }
-#pay-frame { display: block; width: 100%; height: 1200px; border: 0; overflow: hidden; }
-
 /* ---------- partners ---------- */
 .partners { padding-block: clamp(48px, 7vw, 88px) 0; display: grid; gap: 24px; }
 .partners h2 { font-size: clamp(30px, 4.6vw, 48px); }

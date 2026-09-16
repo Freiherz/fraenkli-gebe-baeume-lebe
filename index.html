@@ -33,7 +33,7 @@
       <h1 data-i18n="title">Fränkli gebe, Bäume lebe</h1>
       <p class="tagline" data-i18n="tagline"></p>
       <div class="hero-actions">
-        <a class="btn btn-accent" id="hero-cta" href="#spenden" aria-haspopup="dialog" aria-controls="pay-dialog" data-i18n="hero.cta"></a>
+        <a class="btn btn-accent" id="hero-cta" href="#spenden" target="_blank" rel="noopener" data-i18n="hero.cta"></a>
       </div>
       <div id="countdown" class="countdown" data-ends="2026-09-19T23:59:59+02:00" role="timer" aria-live="off"></div>
     </div>
@@ -71,9 +71,9 @@
         <p class="note" data-i18n="donate.note"></p>
       </div>
       <figure class="qr-card">
-        <button type="button" id="qr-button" class="qr-button" aria-haspopup="dialog" aria-controls="pay-dialog">
+        <a id="qr-link" class="qr-button" href="#spenden" target="_blank" rel="noopener">
           <img id="qr" src="assets/qr.png" width="280" height="280" alt="" data-i18n-alt="donate.qr.alt">
-        </button>
+        </a>
         <figcaption>
           <span class="qr-label" data-i18n="donate.qr.label"></span>
           <span class="qr-amount" data-i18n="donate.qr.hint"></span>
@@ -96,16 +96,6 @@
     </div>
   </section>
 </main>
-
-<dialog id="pay-dialog" class="pay-dialog" aria-labelledby="pay-title">
-  <div class="pay-body">
-    <div class="pay-head">
-      <h2 id="pay-title" data-i18n="donate.modal.title"></h2>
-      <button type="button" class="pay-close" aria-label="Schliessen">&times;</button>
-    </div>
-    <iframe id="pay-frame" allow="payment *" scrolling="no"></iframe>
-  </div>
-</dialog>
 
 <footer class="site-foot wrap">
   <p data-i18n="footer.note"></p>
