@@ -123,12 +123,15 @@ test('all asset references are relative (GitHub Pages sub-path); only Google Fon
   }
 });
 
-test('hero: single donate CTA scrolls to the donate section, tree animation is inline SVG', () => {
-  const doc = boot().document;
+test('hero: single donate CTA opens the QR link, tree animation is inline SVG', () => {
+  const window = boot();
+  const doc = window.document;
   const ctas = doc.querySelectorAll('.hero-actions a');
   assert.equal(ctas.length, 1, 'exactly one CTA — the prize-draw button is gone');
-  assert.equal(ctas[0].getAttribute('href'), '#spenden');
-  assert.ok(doc.querySelector('#spenden'), 'donate section has the id the CTA targets');
+  assert.equal(ctas[0].getAttribute('href'), window.QR_URL, 'CTA goes where the QR goes');
+  assert.match(window.QR_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
+  assert.equal(ctas[0].getAttribute('rel'), 'noopener');
+  assert.ok(doc.querySelector('#spenden'), 'donate section still exists');
   assert.ok(doc.querySelector('.hero-art svg.tree .coin'), 'coin + tree SVG present');
   assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
 });

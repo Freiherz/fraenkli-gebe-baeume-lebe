@@ -243,6 +243,8 @@
   }
 
   function init() {
+    var cta = document.getElementById('hero-cta');
+    if (cta && window.QR_URL) cta.href = window.QR_URL;
     wirePayDialog();
     renderPartners();
     applyLang(Logic.pickLang({

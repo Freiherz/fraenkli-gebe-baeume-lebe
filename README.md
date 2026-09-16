@@ -22,7 +22,8 @@ test/                     node --test suite (jsdom for the page)
 ## Before launch
 
 - `assets/qr.png` is the TWINT QR; clicking it opens `PAY_URL` (in `app.js`)
-  in a modal — keep both pointing at the same Payrexx page.
+  in a modal. The hero button links to `QR_URL` (in `config.js`), the link
+  encoded in the QR — re-decode and update it if the QR is regenerated.
 - Fill the placeholders in `assets/i18n.js` for all three languages:
   `[NAME]`, `[UNIVERSITÄT]`/`[UNIVERSITÉ]`/`[UNIVERSITY]`,
   `[KONTAKT-E-MAIL]`/`[E-MAIL DE CONTACT]`/`[CONTACT EMAIL]`.
