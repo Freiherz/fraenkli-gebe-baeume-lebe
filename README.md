@@ -1,4 +1,4 @@
-# Fränkli gebe, Bäume lebe
+# Franke lah, Bäumli ha
 
 One-page donation campaign: donate 1 CHF via QR code → one tree planted per
 franc. Static HTML/CSS/JS, no build step, no backend. Hosted on GitHub Pages:

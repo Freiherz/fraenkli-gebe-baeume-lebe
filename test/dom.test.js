@@ -39,7 +39,7 @@ test('page renders the German default and the campaign title', () => {
   const window = boot();
   const doc = window.document;
   assert.equal(doc.documentElement.lang, 'de');
-  assert.equal(doc.querySelector('h1').textContent, 'Fränkli gebe, Bäume lebe');
+  assert.equal(doc.querySelector('h1').textContent, 'Franke lah, Bäumli ha');
   assert.equal(doc.title, window.I18N.de['meta.title']);
   assert.equal(doc.querySelector('[data-i18n="donate.h2"]').textContent, window.I18N.de['donate.h2']);
 });

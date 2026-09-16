@@ -2,8 +2,8 @@
 // arrays rendered as list items; everything else is plain text.
 window.I18N = {
   de: {
-    'meta.title': 'Fränkli gebe, Bäume lebe – 1 CHF = 1 Baum',
-    'title': 'Fränkli gebe, Bäume lebe',
+    'meta.title': 'Franke lah, Bäumli ha – 1 CHF = 1 Baum',
+    'title': 'Franke lah, Bäumli ha',
     'tagline': 'Spende 1 Franken 𐂷 wir pflanzen dafür einen Baum.',
     'lang.label': 'Sprache',
     'hero.eyebrow.a': 'Ein Pop-up Projekt von Studierenden',
@@ -30,7 +30,7 @@ window.I18N = {
     'partners.h2': 'Unterstützt von',
     'partners.visit': 'Website besuchen',
     'about.h2': 'Wer steckt dahinter?',
-    'about.text': '«Fränkli gebe, Bäume lebe» ist ein Studierendenprojekt im Rahmen des Moduls «Innovation and Venture LAB I: Startup Project» an der ZHAW.',
+    'about.text': '«Franke lah, Bäumli ha» ist ein Studierendenprojekt im Rahmen des Moduls «Innovation and Venture LAB I: Startup Project» an der ZHAW.',
     'about.team': 'Team:',
     'about.and': 'und',
     'footer.note': 'Ein gemeinnütziges Projekt 𐂷 Verantwortlich: Michael Freiherz 𐂷 Kontakt: freihmic@students.zhaw.ch',
@@ -67,7 +67,7 @@ window.I18N = {
     'partners.h2': 'Avec le soutien de',
     'partners.visit': 'Visiter le site web',
     'about.h2': 'Qui est derrière ce projet ?',
-    'about.text': '« Fränkli gebe, Bäume lebe » est un projet étudiant réalisé dans le cadre du module « Innovation and Venture LAB I: Startup Project » à la ZHAW.',
+    'about.text': '« Franke lah, Bäumli ha » est un projet étudiant réalisé dans le cadre du module « Innovation and Venture LAB I: Startup Project » à la ZHAW.',
     'about.team': 'Équipe :',
     'about.and': 'et',
     'footer.note': 'Un projet d’utilité publique 𐂷 Responsable : Michael Freiherz 𐂷 Contact : freihmic@students.zhaw.ch',
@@ -104,7 +104,7 @@ window.I18N = {
     'partners.h2': 'Supported by',
     'partners.visit': 'Visit website',
     'about.h2': 'Who is behind this?',
-    'about.text': '“Fränkli gebe, Bäume lebe” is a student project within the module “Innovation and Venture LAB I: Startup Project” at ZHAW.',
+    'about.text': '“Franke lah, Bäumli ha” is a student project within the module “Innovation and Venture LAB I: Startup Project” at ZHAW.',
     'about.team': 'Team:',
     'about.and': 'and',
     'footer.note': 'A non-profit project 𐂷 Responsible: Michael Freiherz 𐂷 Contact: freihmic@students.zhaw.ch',
