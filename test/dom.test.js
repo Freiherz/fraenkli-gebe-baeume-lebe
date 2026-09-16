@@ -223,6 +223,30 @@ test('countdown after the end shows the ended message and no digits', () => {
   assert.equal(cd.textContent.trim(), window.I18N.de['countdown.ended']);
 });
 
+test('after the deadline the hero button is disabled and the QR gives way to the thank-you line', () => {
+  const window = boot({ ends: '2000-01-01T00:00:00+01:00' });
+  const doc = window.document;
+  const cta = doc.querySelector('#hero-cta');
+  assert.equal(cta.getAttribute('href'), null, 'no destination any more');
+  assert.equal(cta.getAttribute('aria-disabled'), 'true');
+  assert.equal(doc.querySelector('.qr-card').hidden, true, 'QR card hidden');
+  const done = doc.querySelector('#donate-done');
+  assert.equal(done.hidden, false);
+  assert.equal(done.textContent, window.I18N.de['donate.done']);
+  assert.match(window.I18N.en['donate.done'], /^It’s done\. Thanks to everyone who donated\.$/);
+  doc.querySelector('.lang-switch [data-lang="fr"]').click();
+  assert.equal(done.textContent, window.I18N.fr['donate.done']);
+  assert.equal(doc.querySelector('.qr-card').hidden, true, 'still hidden after a language switch');
+});
+
+test('before the deadline the QR card is shown, the thank-you line hidden and the button live', () => {
+  const doc = boot({ ends: FAR }).document;
+  assert.equal(doc.querySelector('.qr-card').hidden, false);
+  assert.equal(doc.querySelector('#donate-done').hidden, true);
+  assert.equal(doc.querySelector('#hero-cta').getAttribute('aria-disabled'), null);
+  assert.ok(doc.querySelector('#hero-cta').getAttribute('href'));
+});
+
 test('countdown re-renders in the new language', () => {
   const window = boot({ ends: FAR });
   const doc = window.document;

@@ -47,6 +47,7 @@
     if (!el) return;
     var left = Logic.countdown(el.dataset.ends, new Date());
     el.dataset.ended = String(left.ended);
+    setCampaignEnded(left.ended);
     el.innerHTML = '';
     if (left.ended) { el.textContent = t('countdown.ended'); return; }
 
@@ -65,6 +66,24 @@
     el.appendChild(label);
     el.appendChild(grid);
     el.appendChild(until);
+  }
+
+  // After the deadline: the hero button is disabled and the QR card gives
+  // way to the thank-you line. Idempotent — runs on every countdown tick.
+  function setCampaignEnded(ended) {
+    var cta = document.getElementById('hero-cta');
+    if (cta) {
+      if (ended) {
+        cta.removeAttribute('href');
+        cta.setAttribute('aria-disabled', 'true');
+      } else {
+        cta.removeAttribute('aria-disabled');
+      }
+    }
+    var card = document.querySelector('.qr-card');
+    if (card) card.hidden = ended;
+    var done = document.getElementById('donate-done');
+    if (done) done.hidden = !ended;
   }
 
   // "Team: A, B und C" — names with a URL become LinkedIn links.
