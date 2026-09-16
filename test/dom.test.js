@@ -391,20 +391,24 @@ test('the QR column is bounded so a large image cannot squeeze the text column',
   assert.ok(!/\.donate-grid \{[^}]*\bauto\b/.test(css), 'no auto-sized column in the donate grid');
 });
 
-test('the QR is a plain image — not clickable', () => {
-  const doc = boot().document;
-  const qr = doc.querySelector('#qr');
-  assert.equal(qr.tagName, 'IMG');
-  assert.equal(qr.closest('a, button'), null, 'no link or button wraps the QR');
-  assert.equal(doc.querySelector('#qr-link, #qr-button'), null);
+test('the QR is a link to the Payrexx page, opened in a new tab', () => {
+  const window = boot();
+  const doc = window.document;
+  const link = doc.querySelector('a#qr-link');
+  assert.ok(link, 'QR wrapped in a link');
+  assert.equal(link.querySelector('#qr').tagName, 'IMG');
+  assert.equal(window.QR_LINK, 'https://bridged.payrexx.com/pay?qrid=b8ad2ff0-9c12-4aa9-8f43-ad575dbcc04a');
+  assert.equal(link.getAttribute('href'), window.QR_LINK);
+  assert.equal(link.getAttribute('target'), '_blank');
+  assert.equal(link.getAttribute('rel'), 'noopener');
 });
 
-test('the hero button carries the QR URL in the HTML itself — no JS (or a stale cached script) needed', () => {
+test('both donate links carry their URLs in the HTML itself — no JS (or a stale cached script) needed', () => {
   const html = read('index.html');
-  const hrefs = [...html.matchAll(/id="hero-cta"[^>]*href="([^"]*)"/g)].map((m) => m[1]);
-  assert.equal(hrefs.length, 1);
+  const href = (id) => html.match(new RegExp(`id="${id}"[^>]*href="([^"]*)"`))[1];
   const window = boot();
-  for (const href of hrefs) assert.equal(href, window.QR_URL, 'static href matches config.js');
+  assert.equal(href('hero-cta'), window.QR_URL, 'hero static href matches config.js');
+  assert.equal(href('qr-link'), window.QR_LINK, 'QR static href matches config.js');
 });
 
 test('the payment modal is gone entirely', () => {

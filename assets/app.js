@@ -180,10 +180,13 @@
     renderPartnerPanel();
   }
 
-  // ---- hero button opens the URL encoded in the QR (config.js)
+  // ---- donate links (config.js): hero button → URL encoded in the QR,
+  //      QR image → Payrexx page
   function wireDonateLinks() {
     var cta = document.getElementById('hero-cta');
     if (cta && window.QR_URL) cta.href = window.QR_URL;
+    var qr = document.getElementById('qr-link');
+    if (qr && window.QR_LINK) qr.href = window.QR_LINK;
   }
 
   function init() {

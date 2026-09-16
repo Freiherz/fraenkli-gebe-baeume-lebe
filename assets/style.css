@@ -467,6 +467,9 @@ button { font: inherit; color: inherit; }
   background: #fff;
 }
 .qr-card figcaption { display: grid; gap: 2px; text-align: center; }
+.qr-button { display: block; border-radius: 12px; }
+.qr-button:hover img { transform: scale(1.01); }
+.qr-button img { transition: transform .2s ease; }
 
 /* ---------- partners ---------- */
 .partners { padding-block: clamp(48px, 7vw, 88px) 0; display: grid; gap: 24px; }

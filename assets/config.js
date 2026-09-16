@@ -1,9 +1,12 @@
 // Site configuration.
 
 // The link encoded in assets/qr.png (TWINT payment via Payrexx). The hero
-// button and the QR itself link here; if the QR is regenerated, decode it and
-// update this.
+// button links here; if the QR is regenerated, decode it and update this.
 window.QR_URL = 'https://dispatcher.payrexx.com/twint/redirect/02:1d0c8e97a51c410491b1010c729b40cd#2e3470516dbb2adbaf8488e903e9b56f2fbe5b41#';
+
+// Clicking the QR image opens this Payrexx page (index.html carries the same
+// href statically; keep both in sync).
+window.QR_LINK = 'https://bridged.payrexx.com/pay?qrid=b8ad2ff0-9c12-4aa9-8f43-ad575dbcc04a';
 
 // Team members shown in the About card. An empty url renders the name as
 // plain text instead of a link.
