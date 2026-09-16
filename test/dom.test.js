@@ -137,6 +137,16 @@ test('hero: single donate CTA opens the QR link in a new tab, tree animation is 
   assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
 });
 
+test('phones: the hero art is smaller and pulled up so the donate button fits the first screen', () => {
+  const css = read('assets/style.css');
+  const block = css.match(/@media \(max-width: 839px\) \{([\s\S]*?)\n\}/);
+  assert.ok(block, 'phone hero block exists');
+  assert.match(block[1], /\.hero-art \{[^}]*width: min\(100%, 240px\)/);
+  assert.match(block[1], /\.hero-art \{[^}]*margin-top: -40px/);
+  assert.match(block[1], /\.hero \{[^}]*padding-block: 0 /);
+  assert.match(block[1], /\.site-head \{[^}]*padding-block: 12px/);
+});
+
 test('hero eyebrow is split into two spans around a separator that breaks on mobile', () => {
   const window = boot({ url: 'http://localhost/?lang=de' });
   const eyebrow = window.document.querySelector('.hero .eyebrow');

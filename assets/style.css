@@ -309,6 +309,15 @@ button { font: inherit; color: inherit; }
   order: 1;
 }
 @media (min-width: 840px) { .hero-art { width: min(100%, 420px); order: 0; } }
+/* Phones: the tree stacks above the copy, so trim the dead space above it —
+   the SVG's top ~19% is empty apart from the falling coin's start — and
+   tighten the stack so the donate button sits in the first screen. */
+@media (max-width: 839px) {
+  .site-head { padding-block: 12px; }
+  .hero { padding-block: 0 40px; gap: 16px; }
+  .hero-copy { gap: 16px; }
+  .hero-art { width: min(100%, 240px); margin-top: -40px; }
+}
 .tree { width: 100%; height: 100%; overflow: visible; }
 
 /* tree parts */
