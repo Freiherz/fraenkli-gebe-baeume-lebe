@@ -64,12 +64,21 @@ async function main() {
   const transactions = await fetchAllTransactions({ instance, secret });
   const { trees, chf } = countTrees(transactions);
   const out = path.join(__dirname, '..', 'assets', 'trees.json');
-  const json = JSON.stringify({ trees, chf, updatedAt: new Date().toISOString() }, null, 2) + '\n';
-  fs.writeFileSync(out, json);
-  console.log(`${transactions.length} transactions → ${trees} trees (CHF ${chf.toFixed(2)}) → ${path.relative(process.cwd(), out)}`);
+  const written = writeIfChanged(out, { trees, chf });
+  console.log(`${transactions.length} transactions → ${trees} trees (CHF ${chf.toFixed(2)}) → ${path.relative(process.cwd(), out)} ${written ? 'updated' : 'unchanged'}`);
 }
 
-module.exports = { countTrees, normaliseName, isCampaignProduct, sign, fetchAllTransactions };
+// Rewrites the JSON only when trees or chf differ from what is on disk, so
+// updatedAt (and the workflow's commit) only move when the count moves.
+function writeIfChanged(file, { trees, chf }) {
+  let current = null;
+  try { current = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { /* missing or invalid → write */ }
+  if (current && current.trees === trees && current.chf === chf) return false;
+  fs.writeFileSync(file, JSON.stringify({ trees, chf, updatedAt: new Date().toISOString() }, null, 2) + '\n');
+  return true;
+}
+
+module.exports = { countTrees, normaliseName, isCampaignProduct, sign, fetchAllTransactions, writeIfChanged };
 
 if (require.main === module) {
   main().catch((err) => { console.error(err.message); process.exit(1); });

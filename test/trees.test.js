@@ -3,7 +3,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { countTrees, normaliseName, sign, fetchAllTransactions } = require('../scripts/trees');
+const { countTrees, normaliseName, sign, fetchAllTransactions, writeIfChanged } = require('../scripts/trees');
+const os = require('node:os');
 
 const tx = (over) => ({
   status: 'confirmed', amount: 100,
@@ -72,6 +73,19 @@ test('fetchAllTransactions pages by 100 with a signed query and stops on a short
 test('fetchAllTransactions fails loudly on HTTP or API errors', async () => {
   await assert.rejects(fetchAllTransactions({ instance: 'x', secret: 's', fetchImpl: async () => ({ ok: false, status: 401 }) }), /401/);
   await assert.rejects(fetchAllTransactions({ instance: 'x', secret: 's', fetchImpl: async () => ({ ok: true, json: async () => ({ status: 'error', message: 'bad' }) }) }), /bad/);
+});
+
+test('writeIfChanged: touches the file (and updatedAt) only when the count moves', () => {
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'trees-')), 'trees.json');
+  assert.equal(writeIfChanged(file, { trees: 5, chf: 5 }), true, 'missing file → written');
+  const first = fs.readFileSync(file, 'utf8');
+  assert.equal(writeIfChanged(file, { trees: 5, chf: 5 }), false, 'same count → untouched');
+  assert.equal(fs.readFileSync(file, 'utf8'), first);
+  assert.equal(writeIfChanged(file, { trees: 6, chf: 6.5 }), true, 'new count → rewritten');
+  const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+  assert.equal(json.trees, 6); assert.equal(json.chf, 6.5); assert.ok(json.updatedAt);
+  fs.writeFileSync(file, 'not json');
+  assert.equal(writeIfChanged(file, { trees: 6, chf: 6.5 }), true, 'corrupt file → rewritten');
 });
 
 test('workflow: cron every 10 minutes, secret from repo secrets, script and JSON in place', () => {
