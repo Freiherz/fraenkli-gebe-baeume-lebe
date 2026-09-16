@@ -235,6 +235,8 @@
     var button = document.getElementById('qr-button');
     if (!dialog || !button) return;
     button.addEventListener('click', openPayDialog);
+    var cta = document.getElementById('hero-cta');
+    if (cta) cta.addEventListener('click', function (e) { e.preventDefault(); openPayDialog(); });
     dialog.querySelector('.pay-close').addEventListener('click', closePayDialog);
     dialog.addEventListener('click', function (e) { if (e.target === dialog) closePayDialog(); }); // backdrop
     dialog.addEventListener('close', closePayDialog); // Escape key
@@ -243,8 +245,6 @@
   }
 
   function init() {
-    var cta = document.getElementById('hero-cta');
-    if (cta && window.QR_URL) cta.href = window.QR_URL;
     wirePayDialog();
     renderPartners();
     applyLang(Logic.pickLang({

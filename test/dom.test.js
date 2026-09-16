@@ -123,15 +123,18 @@ test('all asset references are relative (GitHub Pages sub-path); only Google Fon
   }
 });
 
-test('hero: single donate CTA opens the QR link, tree animation is inline SVG', () => {
+test('hero: single donate CTA opens the payment modal, tree animation is inline SVG', () => {
   const window = boot();
   const doc = window.document;
   const ctas = doc.querySelectorAll('.hero-actions a');
   assert.equal(ctas.length, 1, 'exactly one CTA — the prize-draw button is gone');
-  assert.equal(ctas[0].getAttribute('href'), window.QR_URL, 'CTA goes where the QR goes');
-  assert.match(window.QR_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
-  assert.equal(ctas[0].getAttribute('rel'), 'noopener');
-  assert.ok(doc.querySelector('#spenden'), 'donate section still exists');
+  assert.equal(ctas[0].getAttribute('href'), '#spenden', 'no-JS fallback scrolls to the QR');
+  assert.equal(ctas[0].getAttribute('aria-haspopup'), 'dialog');
+  assert.equal(window.QR_URL, undefined, 'no separate TWINT link; both entry points use the modal');
+  const dialog = doc.querySelector('#pay-dialog');
+  ctas[0].dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  assert.equal(dialog.open, true, 'hero button opens the payment modal');
+  assert.equal(doc.querySelector('#pay-frame').getAttribute('src'), 'https://bridged.payrexx.com/de/pay?cid=fb16eb5d');
   assert.ok(doc.querySelector('.hero-art svg.tree .coin'), 'coin + tree SVG present');
   assert.equal(doc.querySelector('.hero-art').getAttribute('aria-hidden'), 'true');
 });
