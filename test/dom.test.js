@@ -110,7 +110,8 @@ test('the prize-draw form is gone', () => {
 test('the QR code is present and points at the swappable asset', () => {
   const doc = boot().document;
   const qr = doc.querySelector('#qr');
-  assert.equal(qr.getAttribute('src'), 'assets/qr-placeholder.svg');
+  assert.equal(qr.getAttribute('src'), 'assets/qr.png');
+  assert.ok(require('node:fs').existsSync(require('node:path').join(__dirname, '..', 'assets/qr.png')));
   assert.ok(qr.alt.length > 0);
 });
 
@@ -391,4 +392,16 @@ test('footer carries a legal-notice link in the current language', () => {
   assert.equal(link.textContent, window.I18N.fr['footer.legal']);
   doc.querySelector('.lang-switch [data-lang=en]').click();
   assert.equal(link.textContent, 'Legal notice');
+});
+
+test('the real donate URL is the TWINT link encoded in the QR', () => {
+  const window = boot();
+  assert.match(window.DONATE_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
+  assert.equal(window.document.querySelector('a#qr-link').getAttribute('href'), window.DONATE_URL);
+});
+
+test('the QR column is bounded so a large image cannot squeeze the text column', () => {
+  const css = read('assets/style.css');
+  assert.match(css, /\.donate-grid \{ grid-template-columns: minmax\(0, 1fr\) minmax\(0, 360px\)/);
+  assert.ok(!/\.donate-grid \{[^}]*\bauto\b/.test(css), 'no auto-sized column in the donate grid');
 });
