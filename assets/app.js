@@ -181,7 +181,7 @@
   }
 
   // ---- donate links (config.js): hero button → URL encoded in the QR,
-  //      QR image → Payrexx page
+  //      QR image → payment page
   function wireDonateLinks() {
     var cta = document.getElementById('hero-cta');
     if (cta && window.QR_URL) cta.href = window.QR_URL;
