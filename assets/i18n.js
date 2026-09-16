@@ -19,7 +19,7 @@ window.I18N = {
     'donate.h2': '1 Franken = 1 Baum',
     'donate.lead': 'Jeder gespendete Franken wird zu einem gepflanzten Baum. Spende so viel, wie du möchtest – schon ein Fränkli zählt.',
     'donate.steps': [
-      'QR-Code scannen (TWINT-App)',
+      'QR-Code klicken oder scannen',
       'Betrag eingeben (ab 1 CHF)',
       'Zahlung bestätigen, fertig 𐂷 dein Baum wird gepflanzt',
     ],
@@ -57,7 +57,7 @@ window.I18N = {
     'donate.h2': '1 franc = 1 arbre',
     'donate.lead': 'Chaque franc donné devient un arbre planté. Donne autant que tu veux – même un seul franc compte.',
     'donate.steps': [
-      'Scanner le code QR (application TWINT)',
+      'Cliquer ou scanner le code QR',
       'Saisir le montant (dès 1 CHF)',
       'Confirmer le paiement, c’est tout 𐂷 ton arbre sera planté',
     ],
@@ -95,7 +95,7 @@ window.I18N = {
     'donate.h2': '1 franc = 1 tree',
     'donate.lead': 'Every franc donated becomes a planted tree. Give as much as you like – even a single franc counts.',
     'donate.steps': [
-      'Scan the QR code (TWINT app)',
+      'Click or scan the QR code',
       'Enter the amount (from 1 CHF)',
       'Confirm the payment, done 𐂷 your tree will be planted',
     ],
