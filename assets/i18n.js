@@ -31,10 +31,11 @@ window.I18N = {
     'partners.h2': 'Unterstützt von',
     'partners.visit': 'Website besuchen',
     'about.h2': 'Wer steckt dahinter?',
-    'about.text': '«Fränkli gebe, Bäume lebe» ist ein Studierendenprojekt im Rahmen des Modules «Innovation and Venture LAB I: Startup Project» an der ZHAW.',
+    'about.text': '«Fränkli gebe, Bäume lebe» ist ein Studierendenprojekt im Rahmen des Moduls «Innovation and Venture LAB I: Startup Project» an der ZHAW.',
     'about.team': 'Team:',
     'about.and': 'und',
     'footer.note': 'Ein gemeinnütziges Projekt 𐂷 Verantwortlich: Michael Freiherz 𐂷 Kontakt: freihmic@students.zhaw.ch',
+    'footer.legal': 'Impressum',
     'footer.privacy': 'Diese Seite erhebt keine persönlichen Daten. Sie wird über GitHub Pages ausgeliefert; GitHub kann dabei rein technische Zugriffsdaten (z. B. IP-Adresse) protokollieren.',
   },
 
@@ -72,6 +73,7 @@ window.I18N = {
     'about.team': 'Équipe :',
     'about.and': 'et',
     'footer.note': 'Un projet d’utilité publique 𐂷 Responsable : Michael Freiherz 𐂷 Contact : freihmic@students.zhaw.ch',
+    'footer.legal': 'Mentions légales',
     'footer.privacy': 'Ce site ne collecte aucune donnée personnelle. Il est hébergé sur GitHub Pages ; GitHub peut enregistrer des données d’accès purement techniques (p. ex. l’adresse IP).',
   },
 
@@ -109,6 +111,7 @@ window.I18N = {
     'about.team': 'Team:',
     'about.and': 'and',
     'footer.note': 'A non-profit project 𐂷 Responsible: Michael Freiherz 𐂷 Contact: freihmic@students.zhaw.ch',
+    'footer.legal': 'Legal notice',
     'footer.privacy': 'This site collects no personal data. It is served via GitHub Pages; GitHub may log purely technical access data (e.g. IP address).',
   },
 };

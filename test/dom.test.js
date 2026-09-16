@@ -381,3 +381,14 @@ test('the real partner config has four entries whose logos exist on disk', () =>
   }
   assert.equal(window.document.querySelectorAll('#partners .partner').length, 4);
 });
+
+test('footer carries a legal-notice link in the current language', () => {
+  const window = boot({ url: 'http://localhost/?lang=fr' });
+  const doc = window.document;
+  const link = doc.querySelector('.site-foot a.legal');
+  assert.equal(link.getAttribute('href'), 'https://www.bridged.ch/de/impressum');
+  assert.equal(link.getAttribute('rel'), 'noopener');
+  assert.equal(link.textContent, window.I18N.fr['footer.legal']);
+  doc.querySelector('.lang-switch [data-lang=en]').click();
+  assert.equal(link.textContent, 'Legal notice');
+});
