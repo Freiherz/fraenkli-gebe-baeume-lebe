@@ -14,15 +14,15 @@ assets/style.css          styling
 assets/i18n.js            DE/FR/EN strings
 assets/logic.js           pure helpers (language pick, translation lookup)
 assets/app.js             DOM wiring (language switch, text rendering)
-assets/qr.png             the TWINT QR code; DONATE_URL in config.js is its payload
+assets/qr.png             the TWINT QR code; clicking it opens the Payrexx page in a modal
 docs/design-brief.md      prompt for a visual redesign
 test/                     node --test suite (jsdom for the page)
 ```
 
 ## Before launch
 
-- `assets/qr.png` is the TWINT QR; if it is regenerated, decode it again and
-  update `DONATE_URL` in `assets/config.js` (the phone tap link).
+- `assets/qr.png` is the TWINT QR; clicking it opens `PAY_URL` (in `app.js`)
+  in a modal — keep both pointing at the same Payrexx page.
 - Fill the placeholders in `assets/i18n.js` for all three languages:
   `[NAME]`, `[UNIVERSITÄT]`/`[UNIVERSITÉ]`/`[UNIVERSITY]`,
   `[KONTAKT-E-MAIL]`/`[E-MAIL DE CONTACT]`/`[CONTACT EMAIL]`.

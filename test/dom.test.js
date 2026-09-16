@@ -15,7 +15,7 @@ const scripts = ['assets/config.js', 'assets/i18n.js', 'assets/logic.js', 'asset
 const windows = [];
 after(() => windows.forEach((w) => w.close()));
 
-function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, donateUrl, partners } = {}) {
+function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team, partners } = {}) {
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', (err) => { throw err; });
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole });
@@ -28,7 +28,6 @@ function boot({ url = 'http://localhost/', navLang = 'de-CH', stored, ends, team
     window.eval(code);
     if (code === scripts[0]) { // override config.js values right after it ran
       if (team) window.TEAM = team;
-      if (donateUrl !== undefined) window.DONATE_URL = donateUrl;
       if (partners) window.PARTNERS = partners;
     }
   }
@@ -263,31 +262,8 @@ test('the real team is wired in', () => {
   for (const m of doc.querySelectorAll('#about a.team-member')) assert.match(m.href, /^https:\/\/(www\.)?linkedin\.com\//);
 });
 
-test('with a donate URL the QR becomes a link and a mobile "open TWINT" button appears', () => {
-  const window = boot({ donateUrl: 'https://pay.twint.ch/x/abc' });
-  const doc = window.document;
-  const link = doc.querySelector('a#qr-link');
-  assert.ok(link, 'anchor around the QR');
-  assert.equal(link.getAttribute('href'), 'https://pay.twint.ch/x/abc');
-  assert.equal(link.querySelector('#qr').id, 'qr');
-  const open = doc.querySelector('a.qr-open');
-  assert.equal(open.getAttribute('href'), 'https://pay.twint.ch/x/abc');
-  assert.equal(open.textContent, window.I18N.de['donate.qr.open']);
-  assert.equal(open.hidden, false);
-  doc.querySelector('.lang-switch [data-lang=en]').click();
-  assert.equal(open.textContent, window.I18N.en['donate.qr.open']);
-});
 
-test('without a donate URL the QR is a plain image and the button is hidden', () => {
-  const doc = boot({ donateUrl: '' }).document;
-  assert.equal(doc.querySelector('a#qr-link'), null);
-  assert.equal(doc.querySelector('#qr').parentElement.tagName, 'FIGURE');
-  assert.equal(doc.querySelector('.qr-open').hidden, true);
-});
 
-test('the "open TWINT" button is only shown on touch devices', () => {
-  assert.match(read('assets/style.css'), /@media[^{]*\(hover:\s*none\)[^{]*\{[\s\S]*?\.qr-open/);
-});
 
 const PARTNERS = [
   { id: 'a', name: 'Alpha AG', tagline: { de: 'Alpha Slogan DE', fr: 'Alpha Slogan FR', en: 'Alpha Slogan EN' }, logo: 'assets/partners/alpha.svg', url: 'https://alpha.example', description: { de: 'Alpha DE', fr: 'Alpha FR', en: 'Alpha EN' } },
@@ -394,14 +370,80 @@ test('footer carries a legal-notice link in the current language', () => {
   assert.equal(link.textContent, 'Legal notice');
 });
 
-test('the real donate URL is the TWINT link encoded in the QR', () => {
-  const window = boot();
-  assert.match(window.DONATE_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
-  assert.equal(window.document.querySelector('a#qr-link').getAttribute('href'), window.DONATE_URL);
-});
 
 test('the QR column is bounded so a large image cannot squeeze the text column', () => {
   const css = read('assets/style.css');
   assert.match(css, /\.donate-grid \{ grid-template-columns: minmax\(0, 1fr\) minmax\(0, 360px\)/);
   assert.ok(!/\.donate-grid \{[^}]*\bauto\b/.test(css), 'no auto-sized column in the donate grid');
+});
+
+const PAY_URL = 'https://bridged.payrexx.com/LANG/pay?cid=fb16eb5d';
+
+test('the QR is a button that opens the Payrexx payment page in a modal', () => {
+  const window = boot();
+  const doc = window.document;
+  const qrButton = doc.querySelector('button#qr-button');
+  assert.ok(qrButton, 'QR wrapped in a button');
+  assert.equal(qrButton.querySelector('#qr').id, 'qr');
+  assert.equal(qrButton.getAttribute('aria-haspopup'), 'dialog');
+  const dialog = doc.querySelector('dialog#pay-dialog');
+  const frame = dialog.querySelector('iframe#pay-frame');
+  assert.equal(dialog.open, false);
+  assert.equal(frame.getAttribute('src'), null, 'nothing loaded until opened');
+
+  qrButton.click();
+  assert.equal(dialog.open, true);
+  assert.equal(frame.getAttribute('src'), PAY_URL.replace('LANG', 'de'));
+  assert.equal(frame.getAttribute('allow'), 'payment *');
+  assert.equal(frame.getAttribute('title'), window.I18N.de['donate.modal.title']);
+  assert.equal(dialog.querySelector('.pay-close').getAttribute('aria-label'), window.I18N.de['donate.modal.close']);
+});
+
+test('the modal closes via its button and unloads the payment page', () => {
+  const window = boot({ url: 'http://localhost/?lang=fr' });
+  const doc = window.document;
+  doc.querySelector('#qr-button').click();
+  const dialog = doc.querySelector('#pay-dialog');
+  const frame = doc.querySelector('#pay-frame');
+  assert.equal(frame.getAttribute('src'), PAY_URL.replace('LANG', 'fr'));
+  dialog.querySelector('.pay-close').click();
+  assert.equal(dialog.open, false);
+  assert.equal(frame.getAttribute('src'), null);
+});
+
+test('clicking the backdrop closes the modal', () => {
+  const window = boot();
+  const doc = window.document;
+  doc.querySelector('#qr-button').click();
+  const dialog = doc.querySelector('#pay-dialog');
+  dialog.dispatchEvent(new window.MouseEvent('click', { bubbles: true })); // target is the dialog itself = backdrop
+  assert.equal(dialog.open, false);
+  doc.querySelector('#qr-button').click();
+  dialog.querySelector('.pay-body').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  assert.equal(dialog.open, true, 'clicks inside the content do not close');
+});
+
+test('the "open TWINT" button and DONATE_URL are gone', () => {
+  const window = boot();
+  assert.equal(window.document.querySelector('.qr-open'), null);
+  assert.equal(window.document.querySelector('a#qr-link'), null);
+  assert.equal(window.DONATE_URL, undefined);
+  assert.equal(window.I18N.de['donate.qr.open'], undefined);
+});
+
+test('once open, the page hands Payrexx the handshake and follows its reported height', () => {
+  const window = boot();
+  const doc = window.document;
+  doc.querySelector('#qr-button').click();
+  const frame = doc.querySelector('#pay-frame');
+  const sent = [];
+  frame.contentWindow.postMessage = (msg, target) => sent.push({ msg, target });
+  frame.dispatchEvent(new window.Event('load'));
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].target, 'https://bridged.payrexx.com');
+  assert.deepEqual(JSON.parse(sent[0].msg), { origin: 'http://localhost', integrationMode: 'modal' });
+  window.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ payrexx: { height: '1234px' } }), origin: 'https://bridged.payrexx.com' }));
+  assert.equal(frame.style.height, '1234px');
+  window.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ payrexx: { height: '999px' } }), origin: 'https://evil.example' }));
+  assert.equal(frame.style.height, '1234px');
 });
