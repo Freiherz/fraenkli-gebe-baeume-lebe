@@ -453,3 +453,13 @@ test('once open, the page hands Payrexx the handshake and follows its reported h
   window.dispatchEvent(new window.MessageEvent('message', { data: JSON.stringify({ payrexx: { height: '999px' } }), origin: 'https://evil.example' }));
   assert.equal(frame.style.height, '1234px');
 });
+
+test('the modal has a single scroll container: the dialog never scrolls, only .pay-scroll does', () => {
+  const doc = boot().document;
+  const frame = doc.querySelector('#pay-frame');
+  assert.equal(frame.parentElement.className, 'pay-scroll');
+  const css = read('assets/style.css');
+  assert.match(css, /\.pay-dialog \{[^}]*overflow: hidden/);
+  assert.match(css, /\.pay-scroll \{[^}]*overflow-y: auto/);
+  assert.match(css, /#pay-frame \{[^}]*height: 100%/, 'frame fills the scroll area until Payrexx reports a height');
+});

@@ -470,19 +470,26 @@ button { font: inherit; color: inherit; }
 .qr-button:hover img { transform: scale(1.01); }
 .qr-button img { transition: transform .2s ease; }
 
-/* ---------- payment modal ---------- */
+/* ---------- payment modal ----------
+   One scroll container only (.pay-scroll). Until Payrexx reports its height
+   the frame fills that area and scrolls internally; once the report arrives
+   the frame grows to its content and .pay-scroll scrolls instead. */
 .pay-dialog {
   width: min(100% - 32px, 520px);
-  max-height: min(100% - 32px, 92vh);
+  height: min(100% - 32px, 92dvh);
   padding: 0;
   border: 0;
   border-radius: var(--radius);
   background: #fff;
   color: #12291c;
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+@media (max-width: 719px) {
+  .pay-dialog { width: 100%; height: 100dvh; max-width: none; max-height: none; border-radius: 0; margin: 0; }
 }
 .pay-dialog::backdrop { background: rgba(18, 41, 28, .55); backdrop-filter: blur(2px); }
-.pay-body { display: grid; }
+.pay-body { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; }
 .pay-head {
   display: flex;
   align-items: center;
@@ -494,6 +501,7 @@ button { font: inherit; color: inherit; }
 .pay-head h2 { font-size: 18px; }
 .pay-close {
   width: 40px; height: 40px;
+  flex: none;
   border: 0;
   border-radius: 50%;
   background: #eef0e5;
@@ -502,10 +510,8 @@ button { font: inherit; color: inherit; }
   cursor: pointer;
 }
 .pay-close:hover { background: #dfe4d3; }
-/* height follows Payrexx's own report; 70vh until it arrives */
-#pay-frame { display: block; width: 100%; height: 70vh; border: 0; }
-.qr-label { font-family: var(--display); font-weight: 700; font-size: 17px; }
-.qr-amount { font-size: 14px; color: #4f6357; }
+.pay-scroll { min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#pay-frame { display: block; width: 100%; height: 100%; border: 0; }
 
 /* ---------- partners ---------- */
 .partners { padding-block: clamp(48px, 7vw, 88px) 0; display: grid; gap: 24px; }
