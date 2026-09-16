@@ -128,8 +128,9 @@ test('hero: single donate CTA opens the QR link in a new tab, tree animation is 
   const doc = window.document;
   const ctas = doc.querySelectorAll('.hero-actions a');
   assert.equal(ctas.length, 1, 'exactly one CTA — the prize-draw button is gone');
-  assert.equal(ctas[0].getAttribute('href'), window.QR_URL, 'CTA goes where the QR goes');
-  assert.match(window.QR_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
+  assert.equal(window.CTA_URL, 'https://bridged.payrexx.com/pay?qrid=b5263244-d60f-4304-a79f-d53c287d6970#cddb5a90ceee104a7f83c2cdf41bf773dd79cf8a#');
+  assert.equal(ctas[0].getAttribute('href'), window.CTA_URL);
+  assert.equal(window.QR_URL, undefined, 'old name retired');
   assert.equal(ctas[0].getAttribute('target'), '_blank');
   assert.equal(ctas[0].getAttribute('rel'), 'noopener');
   assert.ok(doc.querySelector('#spenden'), 'donate section still exists');
@@ -407,7 +408,7 @@ test('both donate links carry their URLs in the HTML itself — no JS (or a stal
   const html = read('index.html');
   const href = (id) => html.match(new RegExp(`id="${id}"[^>]*href="([^"]*)"`))[1];
   const window = boot();
-  assert.equal(href('hero-cta'), window.QR_URL, 'hero static href matches config.js');
+  assert.equal(href('hero-cta'), window.CTA_URL, 'hero static href matches config.js');
   assert.equal(href('qr-link'), window.QR_LINK, 'QR static href matches config.js');
 });
 

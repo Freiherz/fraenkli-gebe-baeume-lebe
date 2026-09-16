@@ -1,8 +1,8 @@
 // Site configuration.
 
-// The link encoded in assets/qr.png (TWINT payment via Payrexx). The hero
-// button links here; if the QR is regenerated, decode it and update this.
-window.QR_URL = 'https://dispatcher.payrexx.com/twint/redirect/02:1d0c8e97a51c410491b1010c729b40cd#2e3470516dbb2adbaf8488e903e9b56f2fbe5b41#';
+// The hero donate button opens this Payrexx page (index.html carries the
+// same href statically; keep both in sync).
+window.CTA_URL = 'https://bridged.payrexx.com/pay?qrid=b5263244-d60f-4304-a79f-d53c287d6970#cddb5a90ceee104a7f83c2cdf41bf773dd79cf8a#';
 
 // Clicking the QR image opens this Payrexx page (index.html carries the same
 // href statically; keep both in sync).

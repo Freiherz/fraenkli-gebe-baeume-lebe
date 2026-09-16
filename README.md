@@ -21,10 +21,9 @@ test/                     node --test suite (jsdom for the page)
 
 ## Before launch
 
-- `assets/qr.png` is the TWINT QR. The hero button links to `QR_URL` (in
-  `config.js`), the URL encoded in the QR — re-decode and update it if the
-  QR is regenerated. Clicking the QR opens `QR_LINK` (Payrexx page), which
-  is also written statically into `index.html`; keep the two in sync.
+- `assets/qr.png` is the TWINT QR. The hero button opens `CTA_URL` and a
+  click on the QR opens `QR_LINK` (both in `config.js`, both Payrexx pages);
+  each is also written statically into `index.html` — keep them in sync.
 - Fill the placeholders in `assets/i18n.js` for all three languages:
   `[NAME]`, `[UNIVERSITÄT]`/`[UNIVERSITÉ]`/`[UNIVERSITY]`,
   `[KONTAKT-E-MAIL]`/`[E-MAIL DE CONTACT]`/`[CONTACT EMAIL]`.

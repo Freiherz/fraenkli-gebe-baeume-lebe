@@ -180,11 +180,11 @@
     renderPartnerPanel();
   }
 
-  // ---- donate links (config.js): hero button → URL encoded in the QR,
+  // ---- donate links (config.js): hero button → its payment page,
   //      QR image → payment page
   function wireDonateLinks() {
     var cta = document.getElementById('hero-cta');
-    if (cta && window.QR_URL) cta.href = window.QR_URL;
+    if (cta && window.CTA_URL) cta.href = window.CTA_URL;
     var qr = document.getElementById('qr-link');
     if (qr && window.QR_LINK) qr.href = window.QR_LINK;
   }
