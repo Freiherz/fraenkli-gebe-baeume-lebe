@@ -399,3 +399,9 @@ test('the real donate URL is the TWINT link encoded in the QR', () => {
   assert.match(window.DONATE_URL, /^https:\/\/dispatcher\.payrexx\.com\/twint\/redirect\//);
   assert.equal(window.document.querySelector('a#qr-link').getAttribute('href'), window.DONATE_URL);
 });
+
+test('the QR column is bounded so a large image cannot squeeze the text column', () => {
+  const css = read('assets/style.css');
+  assert.match(css, /\.donate-grid \{ grid-template-columns: minmax\(0, 1fr\) minmax\(0, 360px\)/);
+  assert.ok(!/\.donate-grid \{[^}]*\bauto\b/.test(css), 'no auto-sized column in the donate grid');
+});
