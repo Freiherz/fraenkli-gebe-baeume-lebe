@@ -42,6 +42,16 @@
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
 
+  // "Schon 18 Bäumli gepflanzt." — static count from config.js
+  function renderTrees() {
+    var el = document.getElementById('trees');
+    if (!el) return;
+    var n = window.TREES_PLANTED;
+    el.hidden = typeof n !== 'number' || !(n > 0);
+    if (el.hidden) { el.textContent = ''; return; }
+    el.textContent = t('trees.planted').replace('{n}', n.toLocaleString({ de: 'de-CH', fr: 'fr-CH', en: 'en-GB' }[lang] || 'de-CH'));
+  }
+
   function renderCountdown() {
     var el = document.getElementById('countdown');
     if (!el) return;
@@ -125,6 +135,7 @@
     $$('.lang-switch button').forEach(function (btn) {
       btn.setAttribute('aria-pressed', String(btn.dataset.lang === next));
     });
+    renderTrees();
     renderCountdown();
     renderTeam();
     renderPartnerPanel();

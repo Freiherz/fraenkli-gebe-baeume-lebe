@@ -211,7 +211,8 @@ test('countdown sits under the donate button and shows days/hours/minutes/second
   const window = boot({ ends: FAR });
   const doc = window.document;
   const cd = doc.querySelector('#countdown');
-  assert.equal(cd.previousElementSibling.className, 'hero-actions');
+  assert.equal(cd.previousElementSibling.id, 'trees', 'trees line sits between the button and the countdown');
+  assert.equal(cd.previousElementSibling.previousElementSibling.className, 'hero-actions');
   assert.equal(cd.dataset.ended, 'false');
   const units = [...cd.querySelectorAll('.cd-unit')].map((u) => u.textContent);
   assert.deepEqual(units, ['countdown.days', 'countdown.hours', 'countdown.minutes', 'countdown.seconds'].map((k) => window.I18N.de[k]));
@@ -226,6 +227,28 @@ test('countdown sits under the donate button and shows days/hours/minutes/second
 test('countdown uses the real campaign end by default', () => {
   const cd = boot().document.querySelector('#countdown');
   assert.equal(cd.dataset.ends, '2026-09-19T23:59:59+02:00');
+});
+
+test('trees planted: static count from config.js, shown right above the countdown', () => {
+  const window = boot();
+  const doc = window.document;
+  const el = doc.querySelector('#trees');
+  assert.equal(window.TREES_PLANTED, 18);
+  assert.equal(el.hidden, false);
+  assert.equal(el.textContent, 'Schon 18 Bäumli gepflanzt.');
+  assert.equal(el.nextElementSibling.id, 'countdown', 'sits directly in front of the countdown');
+  doc.querySelector('.lang-switch [data-lang="en"]').click();
+  assert.equal(el.textContent, '18 little trees planted already.');
+  doc.querySelector('.lang-switch [data-lang="fr"]').click();
+  assert.equal(el.textContent, 'Déjà 18 petits arbres plantés.');
+  for (const lang of ['de', 'fr', 'en']) assert.match(window.I18N[lang]['trees.planted'], /\{n\}/);
+});
+
+test('trees planted: hidden while the count is zero or missing', () => {
+  const window = boot();
+  window.TREES_PLANTED = 0;
+  window.document.querySelector('.lang-switch [data-lang="de"]').click();
+  assert.equal(window.document.querySelector('#trees').hidden, true);
 });
 
 test('countdown after the end shows the ended message and no digits', () => {

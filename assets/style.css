@@ -243,6 +243,16 @@ button { font: inherit; color: inherit; }
 .lang-switch button:hover { color: var(--ink); }
 .lang-switch button[aria-pressed="true"] { background: var(--forest); color: var(--forest-ink); }
 
+/* ---------- trees planted ---------- */
+.trees {
+  margin-top: 4px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(18px, 1.2vw + 12px, 22px);
+  color: var(--forest);
+}
+.trees::before { content: "🌳 "; }
+
 /* ---------- countdown ---------- */
 .countdown {
   display: grid;
