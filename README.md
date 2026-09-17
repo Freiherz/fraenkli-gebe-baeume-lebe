@@ -25,9 +25,12 @@ test/                     node --test suite (jsdom for the page)
 tree). `.github/workflows/trees.yml` regenerates it every 10 minutes with
 `scripts/trees.js`, which sums confirmed CHF transactions of the campaign's
 products via the Payrexx API and commits the file when the count changed.
+GitHub's cron is too unreliable for a 10-minute cadence, so one run loops
+for ~5.5 h and then dispatches the next run of itself (until the day after
+the deadline, `CAMPAIGN_LAST_DAY`); the cron only restarts a dead chain.
 The workflow needs the repository secret `PAYREXX_SECRET` (Payrexx API key
-of the `bridged` instance). The page fetches the JSON; `TREES_PLANTED` in
-`config.js` is only the fallback until it has loaded. Manual refresh:
+of the `bridged` instance). The page fetches the JSON; until it has loaded (or
+if it fails) the number reads `TREES_PLACEHOLDER` from `config.js`. Manual refresh:
 Actions → "Update trees counter" → Run workflow.
 
 ## Before launch

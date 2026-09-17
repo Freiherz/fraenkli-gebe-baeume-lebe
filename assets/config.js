@@ -8,10 +8,10 @@ window.CTA_URL = 'https://bridged.payrexx.com/pay?qrid=b5263244-d60f-4304-a79f-d
 // href statically; keep both in sync).
 window.QR_LINK = 'https://bridged.payrexx.com/pay?qrid=b8ad2ff0-9c12-4aa9-8f43-ad575dbcc04a';
 
-// Fallback for the trees counter above the countdown, used until
-// assets/trees.json (written by the trees workflow) has loaded. Keep it at
-// the last known count.
-window.TREES_PLANTED = 23;
+// Placeholder for the trees counter above the countdown, shown until
+// assets/trees.json (written by the trees workflow) has loaded, or if it
+// cannot be loaded.
+window.TREES_PLACEHOLDER = '𐂷𐂷𐂷';
 
 // Team members shown in the About card. An empty url renders the name as
 // plain text instead of a link.

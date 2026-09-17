@@ -88,12 +88,23 @@ test('writeIfChanged: touches the file (and updatedAt) only when the count moves
   assert.equal(writeIfChanged(file, { trees: 6, chf: 6.5 }), true, 'corrupt file → rewritten');
 });
 
-test('workflow: cron every 10 minutes, secret from repo secrets, script and JSON in place', () => {
+test('workflow: self-chaining 10-minute loop with cron backstop, secret from repo secrets, stops after the campaign', () => {
   const yml = fs.readFileSync(path.join(__dirname, '..', '.github/workflows/trees.yml'), 'utf8');
-  assert.match(yml, /cron: '\*\/10 \* \* \* \*'/);
+  assert.match(yml, /cron: '\*\/10 \* \* \* \*'/, 'cron backstop');
+  assert.match(yml, /workflow_dispatch:/);
   assert.match(yml, /PAYREXX_SECRET: \$\{\{ secrets\.PAYREXX_SECRET \}\}/);
   assert.match(yml, /node scripts\/trees\.js/);
   assert.match(yml, /contents: write/);
+  assert.match(yml, /actions: write/, 'needed to dispatch itself');
+  assert.match(yml, /concurrency:\n\s+group: trees/, 'one chain at a time');
+  assert.match(yml, /ROUND_SECONDS: '600'/, '10 minutes between counts');
+  assert.match(yml, /JOB_BUDGET_SECONDS: '19800'/, 'under the 6 h job cap');
+  assert.match(yml, /timeout-minutes: 350/);
+  assert.match(yml, /sleep "\$ROUND_SECONDS"/);
+  assert.match(yml, /git pull -q --rebase origin main\n\s+git push -q/, 'rebases on other pushes before pushing');
+  assert.match(yml, /if: always\(\)/, 're-dispatch even if counting failed');
+  assert.match(yml, /gh workflow run trees\.yml/);
+  assert.match(yml, /CAMPAIGN_LAST_DAY: '20260920'/, 'day after the 19.09.2026 deadline');
   const json = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'assets/trees.json'), 'utf8'));
   assert.equal(typeof json.trees, 'number');
   assert.equal(typeof json.updatedAt, 'string');

@@ -252,6 +252,26 @@ button { font: inherit; color: inherit; }
   color: var(--forest);
 }
 .trees::before { content: "🌳 "; }
+.trees-n { display: inline-block; }
+.trees-n.is-out { animation: treesOut .22s ease-in forwards; }
+.trees-n.is-in { animation: treesIn .5s cubic-bezier(.2, .9, .3, 1.3) both; }
+@keyframes treesOut {
+  to { opacity: 0; transform: translateY(-.5em) scale(.8); filter: blur(2px); }
+}
+@keyframes treesIn {
+  0% { opacity: 0; transform: translateY(.5em) scale(.8); color: var(--accent-ink); background: var(--accent); border-radius: .25em; }
+  60% { opacity: 1; transform: none; background: var(--accent); }
+  100% { background: transparent; }
+}
+.trees-note {
+  margin-left: 6px;
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.trees-arrow { font-size: 1.75em; line-height: 1; vertical-align: -.12em; }
 
 /* ---------- countdown ---------- */
 .countdown {

@@ -43,27 +43,50 @@
   function pad(n) { return n < 10 ? '0' + n : String(n); }
 
   // "Schon 23 Bäumli gepflanzt." — live count from assets/trees.json (written
-  // by the trees workflow every 10 minutes); config.js TREES_PLANTED is the
-  // fallback until the file has loaded or if it cannot be loaded.
+  // by the trees workflow every 10 minutes). config.js TREES_PLACEHOLDER is
+  // rendered immediately; when the file arrives the number swaps in with a
+  // small animation (.trees-n leaves, the number enters).
   var treesLive = null;
+  var SWAP_OUT_MS = 220;
 
   function loadTrees() {
     if (typeof fetch !== 'function') return;
     fetch('assets/trees.json', { cache: 'no-cache' })
       .then(function (res) { return res.ok ? res.json() : null; })
       .then(function (data) {
-        if (data && typeof data.trees === 'number' && data.trees >= 0) { treesLive = data.trees; renderTrees(); }
+        if (data && typeof data.trees === 'number' && data.trees >= 0) { treesLive = data.trees; renderTrees(true); }
       })
-      .catch(function () { /* keep the fallback */ });
+      .catch(function () { /* keep the placeholder */ });
   }
 
-  function renderTrees() {
+  function treesNumber() {
+    if (treesLive === null) return window.TREES_PLACEHOLDER || '';
+    return treesLive > 0 ? treesLive.toLocaleString({ de: 'de-CH', fr: 'fr-CH', en: 'en-GB' }[lang] || 'de-CH') : '';
+  }
+
+  // animate = true: the live number replaces the placeholder with the swap
+  // animation; otherwise (first paint, language switch) it is set directly.
+  function renderTrees(animate) {
     var el = document.getElementById('trees');
     if (!el) return;
-    var n = treesLive === null ? window.TREES_PLANTED : treesLive;
-    el.hidden = typeof n !== 'number' || !(n > 0);
-    if (el.hidden) { el.textContent = ''; return; }
-    el.textContent = t('trees.planted').replace('{n}', n.toLocaleString({ de: 'de-CH', fr: 'fr-CH', en: 'en-GB' }[lang] || 'de-CH'));
+    var pre = el.querySelector('.trees-pre');
+    var n = el.querySelector('.trees-n');
+    var post = el.querySelector('.trees-post');
+    if (!pre || !n || !post) return;
+    var shown = treesNumber();
+    el.hidden = !shown;
+    if (!shown) { pre.textContent = n.textContent = post.textContent = ''; return; }
+    var parts = t('trees.planted').split('{n}');
+    pre.textContent = parts[0];
+    post.textContent = parts.slice(1).join('{n}');
+    if (!animate || n.textContent === shown || !n.textContent) { n.textContent = shown; return; }
+    n.classList.remove('is-in');
+    n.classList.add('is-out');
+    setTimeout(function () {
+      n.textContent = treesNumber();
+      n.classList.remove('is-out');
+      n.classList.add('is-in');
+    }, SWAP_OUT_MS);
   }
 
   function renderCountdown() {

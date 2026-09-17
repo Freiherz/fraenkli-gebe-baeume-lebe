@@ -1,37 +1,69 @@
 name: Update trees counter
 
+# GitHub's cron is throttled to "every few hours" for a schedule like this, so
+# one job keeps counting every 10 minutes for ~5.5 h and then dispatches the
+# next run of itself (self-chaining) until the day after the campaign ends.
+# The cron only restarts the chain if a run ever dies; the concurrency group
+# keeps a single chain alive.
 on:
   schedule:
-    - cron: '*/10 * * * *'   # every 10 minutes (GitHub may delay a few minutes)
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: trees
   cancel-in-progress: false
 
+env:
+  CAMPAIGN_LAST_DAY: '20260920'   # YYYYMMDD (UTC): no re-dispatch after this day
+  ROUND_SECONDS: '600'            # 10 minutes between counts
+  JOB_BUDGET_SECONDS: '19800'     # 5.5 h per run (GitHub caps a job at 6 h)
+
 jobs:
   count:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Count confirmed donations via the Payrexx API
+      - name: Count confirmed donations every 10 minutes and commit on change
         env:
           PAYREXX_SECRET: ${{ secrets.PAYREXX_SECRET }}
           PAYREXX_INSTANCE: bridged
-        run: node scripts/trees.js
-      - name: Commit assets/trees.json if the count changed
         run: |
-          if git diff --quiet -- assets/trees.json; then
-            echo "unchanged"; exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/trees.json
-          git commit -m "Trees counter: $(node -p "require('./assets/trees.json').trees") trees"
-          git push
+          deadline=$(( $(date +%s) + JOB_BUDGET_SECONDS ))
+          while :; do
+            if node scripts/trees.js; then
+              if git diff --quiet -- assets/trees.json; then
+                echo "$(date -u +%H:%M) unchanged"
+              else
+                git add assets/trees.json
+                git commit -q -m "Trees counter: $(node -p "require('./assets/trees.json').trees") trees"
+                git pull -q --rebase origin main
+                git push -q
+                echo "$(date -u +%H:%M) pushed"
+              fi
+            else
+              echo "$(date -u +%H:%M) count failed, retrying next round"
+            fi
+            [ "$(date +%s)" -ge "$deadline" ] && break
+            sleep "$ROUND_SECONDS"
+          done
+      - name: Dispatch the next run (until the day after the campaign ends)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%Y%m%d)" -le "$CAMPAIGN_LAST_DAY" ]; then
+            gh workflow run trees.yml -R "$GITHUB_REPOSITORY" && echo "next run dispatched"
+          else
+            echo "campaign over, chain stops"
+          fi

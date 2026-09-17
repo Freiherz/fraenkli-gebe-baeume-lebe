@@ -236,47 +236,71 @@ test('countdown uses the real campaign end by default', () => {
 
 const tick = () => new Promise((r) => setImmediate(r));
 
-test('trees planted: fallback count from config.js when no fetch is available, right above the countdown', () => {
+test('trees planted: placeholder 𐂷𐂷𐂷 from config.js when no fetch is available, right above the countdown', () => {
   const window = boot();
   const doc = window.document;
   const el = doc.querySelector('#trees');
-  assert.equal(window.TREES_PLANTED, 23);
+  const count = el.querySelector('.trees-count');
+  assert.equal(window.TREES_PLACEHOLDER, '𐂷𐂷𐂷');
+  assert.equal(window.TREES_PLANTED, undefined, 'no static number any more');
   assert.equal(el.hidden, false);
-  assert.equal(el.textContent, 'Schon 23 Bäumli gepflanzt.');
+  assert.equal(count.textContent, 'Schon 𐂷𐂷𐂷 Bäumli gepflanzt.');
   assert.equal(el.nextElementSibling.id, 'countdown', 'sits directly in front of the countdown');
   doc.querySelector('.lang-switch [data-lang="en"]').click();
-  assert.equal(el.textContent, '23 little trees planted already.');
+  assert.equal(count.textContent, '𐂷𐂷𐂷 little trees planted already.');
   doc.querySelector('.lang-switch [data-lang="fr"]').click();
-  assert.equal(el.textContent, 'Déjà 23 petits arbres plantés.');
+  assert.equal(count.textContent, 'Déjà 𐂷𐂷𐂷 petits arbres plantés.');
   for (const lang of ['de', 'fr', 'en']) assert.match(window.I18N[lang]['trees.planted'], /\{n\}/);
 });
 
-test('trees planted: live count from assets/trees.json wins over the fallback and survives a language switch', async () => {
-  const window = boot({ trees: { body: { trees: 41, chf: 41.5, updatedAt: '2026-09-17T10:00:00Z' } } });
+test('trees planted: inline small print «↻ alle 10 Min.» with a scaled-up arrow', () => {
+  const window = boot();
   const doc = window.document;
-  await tick(); await tick();
-  assert.deepEqual(window.fetchCalls, ['assets/trees.json']);
-  assert.equal(doc.querySelector('#trees').textContent, 'Schon 41 Bäumli gepflanzt.');
+  const note = doc.querySelector('#trees small.trees-note');
+  assert.equal(note.textContent.replace(/\s+/g, ' ').trim(), '↻ alle 10 Min.');
+  assert.equal(note.querySelector('.trees-arrow').getAttribute('aria-hidden'), 'true');
   doc.querySelector('.lang-switch [data-lang="en"]').click();
-  assert.equal(doc.querySelector('#trees').textContent, '41 little trees planted already.');
+  assert.equal(note.textContent.replace(/\s+/g, ' ').trim(), '↻ every 10 min');
+  doc.querySelector('.lang-switch [data-lang="fr"]').click();
+  assert.equal(note.textContent.replace(/\s+/g, ' ').trim(), '↻ toutes les 10 min');
+  const css = read('assets/style.css');
+  assert.doesNotMatch(css.match(/\.trees-note \{[^}]*\}/)[0], /display: block/, 'same line as the counter');
+  assert.match(css, /\.trees-arrow \{[^}]*font-size: 1\.\d+em/, 'arrow scaled up to text size');
 });
 
-test('trees planted: a failed or malformed fetch keeps the fallback', async () => {
+test('trees planted: placeholder paints first, then the live number swaps in with the animation classes', async () => {
+  const window = boot({ trees: { body: { trees: 41, chf: 41.5, updatedAt: '2026-09-17T10:00:00Z' } } });
+  const doc = window.document;
+  const n = doc.querySelector('#trees .trees-n');
+  assert.equal(doc.querySelector('#trees .trees-count').textContent, 'Schon 𐂷𐂷𐂷 Bäumli gepflanzt.', 'placeholder before the fetch resolves');
+  await tick(); await tick();
+  assert.deepEqual(window.fetchCalls, ['assets/trees.json']);
+  assert.equal(n.className, 'trees-n is-out', 'placeholder animates out');
+  assert.equal(n.textContent, '𐂷𐂷𐂷', 'text unchanged until the out-animation ends');
+  await new Promise((r) => setTimeout(r, 300));
+  assert.equal(n.className, 'trees-n is-in', 'number animates in');
+  assert.equal(doc.querySelector('#trees .trees-count').textContent, 'Schon 41 Bäumli gepflanzt.');
+  doc.querySelector('.lang-switch [data-lang="en"]').click();
+  assert.equal(doc.querySelector('#trees .trees-count').textContent, '41 little trees planted already.');
+  assert.equal(n.className, 'trees-n is-in', 'language switch does not re-animate');
+});
+
+test('trees planted: a failed or malformed fetch keeps the placeholder', async () => {
   for (const trees of ['reject', { ok: false, body: {} }, { body: { trees: 'many' } }, { body: null }]) {
     const window = boot({ trees });
     await tick(); await tick();
-    assert.equal(window.document.querySelector('#trees').textContent, 'Schon 23 Bäumli gepflanzt.', JSON.stringify(trees));
+    assert.equal(window.document.querySelector('#trees .trees-count').textContent, 'Schon 𐂷𐂷𐂷 Bäumli gepflanzt.', JSON.stringify(trees));
   }
 });
 
-test('trees planted: hidden while the count is zero or missing', async () => {
-  const window = boot();
-  window.TREES_PLANTED = 0;
-  window.document.querySelector('.lang-switch [data-lang="de"]').click();
-  assert.equal(window.document.querySelector('#trees').hidden, true);
+test('trees planted: hidden once the live count is known to be zero, or when no placeholder is configured', async () => {
   const live = boot({ trees: { body: { trees: 0 } } });
   await tick(); await tick();
   assert.equal(live.document.querySelector('#trees').hidden, true);
+  const bare = boot();
+  bare.TREES_PLACEHOLDER = '';
+  bare.document.querySelector('.lang-switch [data-lang="de"]').click();
+  assert.equal(bare.document.querySelector('#trees').hidden, true);
 });
 
 test('assets/trees.json is committed and well-formed (first paint before the workflow ever ran)', () => {
