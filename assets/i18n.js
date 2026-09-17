@@ -89,7 +89,7 @@ window.I18N = {
     'hero.eyebrow.a': 'A pop-up project by students at ZHAW',
     'hero.eyebrow.b': '',
     'hero.cta': 'Donate 1 franc now',
-    'trees.planted': '{n} little trees planted already.',
+    'trees.planted': '{n} trees planted already.',
     'trees.delay': 'every 10 min',
     'countdown.label': 'The campaign only runs for another',
     'countdown.until': 'Ends on',
