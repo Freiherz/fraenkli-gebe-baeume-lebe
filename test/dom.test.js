@@ -76,8 +76,8 @@ test('the slogan itself is translated in h1, brand and document title', () => {
   assert.equal(doc.querySelector('.brand-name').textContent, 'Un p’tit franc donné, un arbre planté');
   assert.match(doc.title, /^Un p’tit franc donné, un arbre planté/);
   doc.querySelector('.lang-switch [data-lang=en]').click();
-  assert.equal(doc.querySelector('h1').textContent, 'Give a franc, grow a tree');
-  assert.equal(doc.querySelector('.brand').getAttribute('aria-label'), 'Give a franc, grow a tree');
+  assert.equal(doc.querySelector('h1').textContent, 'Drop a franc, gain a tree');
+  assert.equal(doc.querySelector('.brand').getAttribute('aria-label'), 'Drop a franc, gain a tree');
 });
 
 test('stored language from a previous visit beats the browser locale', () => {
@@ -247,7 +247,7 @@ test('trees planted: placeholder 𐂷𐂷𐂷 from config.js when no fetch is av
   assert.equal(count.textContent, 'Schon 𐂷𐂷𐂷 Bäumli gepflanzt.');
   assert.equal(el.nextElementSibling.id, 'countdown', 'sits directly in front of the countdown');
   doc.querySelector('.lang-switch [data-lang="en"]').click();
-  assert.equal(count.textContent, '𐂷𐂷𐂷 little trees planted already.');
+  assert.equal(count.textContent, '𐂷𐂷𐂷 trees planted already.');
   doc.querySelector('.lang-switch [data-lang="fr"]').click();
   assert.equal(count.textContent, 'Déjà 𐂷𐂷𐂷 petits arbres plantés.');
   for (const lang of ['de', 'fr', 'en']) assert.match(window.I18N[lang]['trees.planted'], /\{n\}/);
@@ -281,7 +281,7 @@ test('trees planted: placeholder paints first, then the live number swaps in wit
   assert.equal(n.className, 'trees-n is-in', 'number animates in');
   assert.equal(doc.querySelector('#trees .trees-count').textContent, 'Schon 41 Bäumli gepflanzt.');
   doc.querySelector('.lang-switch [data-lang="en"]').click();
-  assert.equal(doc.querySelector('#trees .trees-count').textContent, '41 little trees planted already.');
+  assert.equal(doc.querySelector('#trees .trees-count').textContent, '41 trees planted already.');
   assert.equal(n.className, 'trees-n is-in', 'language switch does not re-animate');
 });
 
