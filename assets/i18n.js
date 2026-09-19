@@ -82,8 +82,8 @@ window.I18N = {
   },
 
   en: {
-    'meta.title': 'Give a franc, grow a tree – 1 CHF = 1 tree',
-    'title': 'Give a franc, grow a tree',
+    'meta.title': 'Drop a franc, gain a tree – 1 CHF = 1 tree',
+    'title': 'Drop a franc, gain a tree',
     'tagline': 'Donate 1 franc 𐂷 we plant a tree in return.',
     'lang.label': 'Language',
     'hero.eyebrow.a': 'A pop-up project by students at ZHAW',
